@@ -1,0 +1,42 @@
+---> POINT CLOUD LIBRARY <---
+PCL unstable version 1.7 (pcl-trunk) 
+http://pointclouds.org/downloads/source.html
+
+---> PCL DEPENDENCIES <---
+--> BOOST (version 1.53.0-17)
+sudo apt-get install libboost-all-dev
+
+--> FLANN (version 1.8.4)
+sudo apt-get install libflann-dev
+it is necessary to install the hdf5 library too
+sudo apt-get install libhdf5-serial-dev
+
+--> EIGEN (version 3.1.3)
+sudo apt-get install libeigen3-dev
+
+--> VTK (version 5.8)
+sudo apt-get install libvtk5-dev
+
+--> OPENNI (OpenNI SDK version 1.5.2.23)
+http://www.openni.org/openni-sdk/openni-sdk-history-2/#.UbWkp1QW2Xc
+Please take care to the README file
+
+--> QHULL (version 2012.1)
+sudo apt-get install libqhull-dev
+
+******************************************************************
+******************************************************************
+PRE-BUILD BINARIES INSTALLATION
+(http://pointclouds.org/downloads/linux.html)
+
+sudo add-apt-repository ppa:v-launchpad-jochen-sprickerhof-de/pcl
+sudo apt-get update
+sudo apt-get install libpcl-all
+
+---> VTK
+The following packages are required
+sudo apt-get install python-vtk
+sudo apt-get install libvtk-java
+
+
+

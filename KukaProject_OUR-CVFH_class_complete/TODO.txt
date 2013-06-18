@@ -1,0 +1,22 @@
+TODO
+
+---> class KinectAcquisiton
+- add a calibration routine for the Kinect
+
+---> class CloudProcessing
+- add the MLS upsampling function
+- add a pass-through filter?
+
+--> class OURCVFHEstimation
+- why OURCVFH function fails? <-- <-- <-- <-- 
+	(when done -> eliminate LoadOURCVFH from Cloud
+		   -> substitute ComputeOURCVFH to loading files)
+
+--> class SceneManagement
+- Complete visualization (viewports) <--- <--- <---
+
+--> class MainLoop
+- implement KukaVisionStage
+
+
+FLOWCHART OF TRAINING STAGE

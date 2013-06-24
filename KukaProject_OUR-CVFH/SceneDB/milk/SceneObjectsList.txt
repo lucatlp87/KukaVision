@@ -1,6 +1,0 @@
-1
-detergent
-../ObjectDB/detergent/
-2
-detergent
-../ObjectDB/detergent/

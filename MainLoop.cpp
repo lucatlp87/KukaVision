@@ -158,11 +158,11 @@ void MainLoop::TrainingStage()
           win_legend_end.append(boost::lexical_cast<std::string>((int)extracted_clusters.size()));
           bool first_storage = 1;
 
-          // STEP T3.1. CLUSTER VISUALIZATION AND STORAGE ********************************************************************************************************
+          // STEP T4. CLUSTER VISUALIZATION AND STORAGE ********************************************************************************************************
           // *****************************************************************************************************************************************************
           // The next step is implement for each found cluster. It deals with visualization of the cluster (wrt the orignal acquired cloud) and the user choice 
           // about saving it or not.
-          pcl::console::print_error ("\n\tSTEP T3.1. CLUSTERS VISUALIZATION AND STORAGE");
+          pcl::console::print_error ("\n\tSTEP T4. CLUSTERS VISUALIZATION AND STORAGE");
 
           for (int cluster_idx = 0; cluster_idx < extracted_clusters.size(); ++cluster_idx)
           {
@@ -216,11 +216,11 @@ void MainLoop::TrainingStage()
               updated_dir = "NOT_SAVED";
             else
             {
-              // STEP T3.1.1. VOXEL GRID FILTER APPLICATION ********************************************************************************************************
+              // STEP T4.1. VOXEL GRID FILTER APPLICATION ********************************************************************************************************
               // ***************************************************************************************************************************************************
               // In this step a Voxel grid filter is applied in order to uniform the data points density
               tt.tic();
-              pcl::console::print_error("\n\t\tSTEP T3.1.1. Voxel grid filter application...");
+              pcl::console::print_error("\n\t\tSTEP T4.1. Voxel grid filter application...");
                             
               processing_object.VoxelGridFilter(&extracted_clusters[cluster_idx]);
 
@@ -228,26 +228,26 @@ void MainLoop::TrainingStage()
               std::cout << "\t\t(" << extracted_clusters[cluster_idx].GetCloud()->points.size() << " data points)" << std::endl
                         << "\t\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
 
-              // STEP T3.1.2. NORMALS ESTIMATION *******************************************************************************************************************
+              // STEP T4.2. NORMALS ESTIMATION *******************************************************************************************************************
               // ***************************************************************************************************************************************************
               // This step deals with normals computation and concatenation between point cloud and normals cloud.
 
               tt.tic();
-              pcl::console::print_error ("\n\t\tSTEP T3.1.2. Normals computation...");
+              pcl::console::print_error ("\n\t\tSTEP T4.2. Normals computation...");
 
               processing_object.CloudNormalsComputation(&extracted_clusters[cluster_idx]);
 
               pcl::console::print_error ("\tdone\n");
               std::cout << "\t\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
   
-              // STEP T3.1.3. OUR-CVFH SIGNATURE ESTIMATION ********************************************************************************************************
+              // STEP T4.3. OUR-CVFH SIGNATURE ESTIMATION ********************************************************************************************************
               // ***************************************************************************************************************************************************
 
               // OUR-CVFH estimation class instantiation
               OURCVFHEstimation ourcvfh_object;
 
               tt.tic();
-              pcl::console::print_error ("\n\t\tSTEP T3.1.3 OUR-CVFH signature estimation...");
+              pcl::console::print_error ("\n\t\tSTEP T4.3 OUR-CVFH signature estimation...");
 
               // ourcvfh_object.CloudOURCVFHComputation(&extracted_clusters[cluster_idx]);
               if (cluster_idx == 0)
@@ -261,9 +261,9 @@ void MainLoop::TrainingStage()
               pcl::console::print_error ("\tdone\n");
               std::cout << "\t\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
 
-              // STEP T3.1.4 SAVING THE CLOUD ***********************************************************************************************************************
+              // STEP T4.4 SAVING THE CLOUD ***********************************************************************************************************************
               // ****************************************************************************************************************************************************
-              pcl::console::print_error ("\n\t\tSTEP T3.1.4. Cloud storage...\n");
+              pcl::console::print_error ("\n\t\tSTEP T4.4. Cloud storage...\n");
 
               updated_dir = extracted_clusters[cluster_idx].SaveCloud();
 
@@ -288,11 +288,11 @@ void MainLoop::TrainingStage()
 
           std::cout << std::endl << "---> DOMINANT PLANE AND CLUSTERS EXTRACTION total execution time: " << tt.toc() << " ms" << std::endl << std::endl;
                
-          // STEP T4. KDTREE UPDATE *********************************************************************************************************************************
+          // STEP T5. KDTREE UPDATE *********************************************************************************************************************************
           // ********************************************************************************************************************************************************
 
           tt.tic();
-          pcl::console::print_error ("\nSTEP T4. KD-TREES UPDATE\n");
+          pcl::console::print_error ("\nSTEP T5. KD-TREES UPDATE\n");
           
           // Prcessing the modified subfolder vector. 
           if (!updated_folders[0].compare("NO_CLUSTER_SAVED"))

@@ -7,17 +7,17 @@
 //      T1. Point cloud acquisition from Kinect
 //      T2. Pass.through filter application
 //      T3. Dominant plane and clusters extraction. 
-//          T3.1. Cluster visualization and storage.
-//                For each found cluster it is visualized and the user is asked to choose to save it or not. If the choice is yes:
-//                T3.1.1. Voxel grid filter application
-//                T3.1.2. Normals computation
-//                T3.1.3. OUR-CVFH signature estimation
-//                T3.1.4. Cloud storage
-//      T4. Kd-Trees update. 
+//          T4. Cluster visualization and storage.
+//              For each found cluster it is visualized and the user is asked to choose to save it or not. If the choice is yes:
+//              T4.1. Voxel grid filter application
+//              T4.2. Normals computation
+//              T4.3. OUR-CVFH signature estimation
+//              T4.4. Cloud storage
+//      T5. Kd-Trees update. 
 //          For each folder updated in previous steps
-//          T4.1. OUR-CVFH histogram conversion to Flann format
-//          T4.2. OUR-CVFH histograms path add
-//          T4.3. Kd-Tree index build and storage
+//          T5.1. OUR-CVFH histogram conversion to Flann format
+//          T5.2. OUR-CVFH histograms path add
+//          T5.3. Kd-Tree index build and storage
 // 
 //  - NEW SCENE CREATION STAGE
 //    It deals with the creation of new reference scene. Every new scene is saved in the SceneDB. 
@@ -28,7 +28,7 @@
 //           NS.4. Clusters OUR-CVFH signature determination and DB search
 //                 For each found cluster:
 //                 NS.4.1. Voxel grid filter application
-//                 NS.4.2. normals computation
+//                 NS.4.2. Normals computation
 //                 NS.4.3. OUR-CVFH signature estimation
 //                         NS.4.3.1. OUR-CVFH signature transformation
 //                 NS.4.4. DB search
@@ -44,7 +44,7 @@
 //    that the Kuka arm has to perform. 
 //    The kukavision step is structure as follows:
 //      KV1. Reference scene selection
-//      KV2. Point clous acquisition from Kinect
+//      KV2. Point cloud acquisition from Kinect
 //      KV3. Pass-through filter application
 //      KV4. Dominant plane and clusters extraction
 //           For each found cluster:

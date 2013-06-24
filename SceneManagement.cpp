@@ -321,14 +321,14 @@ SceneManagement::VisualizeRefScene(std::vector<Cloud, Eigen::aligned_allocator<C
 	    	for(size_t matrix_j = 0; matrix_j < 4; ++matrix_j)
 	    	{
 	    		object_pose_string.append(boost::lexical_cast<std::string>((int)object_pose[matrix_i][matrix_j]));
-	    		if(matrix_j == 3)
-	    			object_pose_string.append("\n");
+	    		if(matrix_j == 3 && i < 3)
+	    			object_pose_string.append("\n         ");
 	    		else
 	    			object_pose_string.append(" ");
 	    	}
 
 		std::stringstream object_info;
-		object_info << object_name.str() << "\nType: " << ref_objects_list[i].GetObjectType() << "\nPose:\n" << object_pose_string;
+		object_info << object_name.str() << "\nType: " << ref_objects_list[i].GetObjectType() << "\nPose: " << object_pose_string;
 		scene_viewer->addText(object_info.str(), 10, 10, 0.8, 0.2, 0.2, object_name.str(), viewport);
 	    scene_viewer->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_FONT_SIZE, 10, object_name.str(), viewport);
 

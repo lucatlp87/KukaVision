@@ -12,8 +12,11 @@ public:
 
 
 	// CLOUD FILTERS ************************************************************************************************************************************************
-	// Point data density uniformation
+	// Pass-through filter
+	void PassThroughFilter(Cloud input_cloud);
+	// Voxel grid filter
 	void VoxelGridFilter(Cloud *input_cloud);
+	// 
 
 	// CLOUD PROCESSING *********************************************************************************************************************************************
 	// 	Clusters extraction

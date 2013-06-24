@@ -5,7 +5,7 @@ TODO
 
 ---> class CloudProcessing
 - add the MLS upsampling function <--- <---
-- add a pass-through filter
+- set the pass-through filter
 
 --> class OURCVFHEstimation
 - why OURCVFH function fails? <--- <--- <---

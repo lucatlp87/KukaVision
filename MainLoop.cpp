@@ -124,17 +124,28 @@ void MainLoop::TrainingStage()
         original_acquisition = cloud_by_kinect.GetCloud();
 
 
-        // STEP T2. DOMINANT PLANE AND CLUSTERS EXTRACTION **********************************************************************************************************
+        // STEP T2. PASS-THROUGH FILTER APPLICATION *****************************************************************************************************************
+        // **********************************************************************************************************************************************************
+
+        tt.tic();
+        pcl::console::print_error ("\nSTEP T2. PASS-THROUGH FILTER APPLICATION");
+
+        // Processing class instantiation
+        CloudProcessing processing_object;
+
+        // Filter application
+        // processing_object.PassThroughFilter(cloud_by_kinect);
+
+        std::cout << std::endl << "---> PASS-THROUGH FILTER APPLICATION total execution time: " << tt.toc() << " ms" << std::endl << std::endl;
+
+        // STEP T3. DOMINANT PLANE AND CLUSTERS EXTRACTION **********************************************************************************************************
         // **********************************************************************************************************************************************************
 
         // Vector containing the extracted clusters objects
         std::vector<Cloud, Eigen::aligned_allocator<Cloud> > extracted_clusters;
         
         tt.tic();
-        pcl::console::print_error ("\nSTEP T2. DOMINANT PLANE AND CLUSTERS EXTRACTION\n");
-
-        // Processing class instantiation
-        CloudProcessing processing_object;
+        pcl::console::print_error ("\nSTEP T3. DOMINANT PLANE AND CLUSTERS EXTRACTION\n");
 
         extracted_clusters = processing_object.ExtractClustersFromCloud(cloud_by_kinect);
         
@@ -147,11 +158,11 @@ void MainLoop::TrainingStage()
           win_legend_end.append(boost::lexical_cast<std::string>((int)extracted_clusters.size()));
           bool first_storage = 1;
 
-          // STEP T2.1. CLUSTER VISUALIZATION AND STORAGE ********************************************************************************************************
+          // STEP T3.1. CLUSTER VISUALIZATION AND STORAGE ********************************************************************************************************
           // *****************************************************************************************************************************************************
           // The next step is implement for each found cluster. It deals with visualization of the cluster (wrt the orignal acquired cloud) and the user choice 
           // about saving it or not.
-          pcl::console::print_error ("\n\tSTEP T2.1. CLUSTERS VISUALIZATION AND STORAGE");
+          pcl::console::print_error ("\n\tSTEP T3.1. CLUSTERS VISUALIZATION AND STORAGE");
 
           for (int cluster_idx = 0; cluster_idx < extracted_clusters.size(); ++cluster_idx)
           {
@@ -205,11 +216,11 @@ void MainLoop::TrainingStage()
               updated_dir = "NOT_SAVED";
             else
             {
-              // STEP T2.1.1. VOXEL GRID FILTER APPLICATION ********************************************************************************************************
+              // STEP T3.1.1. VOXEL GRID FILTER APPLICATION ********************************************************************************************************
               // ***************************************************************************************************************************************************
               // In this step a Voxel grid filter is applied in order to uniform the data points density
               tt.tic();
-              pcl::console::print_error("\n\t\tSTEP T2.1.1. Voxel grid filter application...");
+              pcl::console::print_error("\n\t\tSTEP T3.1.1. Voxel grid filter application...");
                             
               processing_object.VoxelGridFilter(&extracted_clusters[cluster_idx]);
 
@@ -217,26 +228,26 @@ void MainLoop::TrainingStage()
               std::cout << "\t\t(" << extracted_clusters[cluster_idx].GetCloud()->points.size() << " data points)" << std::endl
                         << "\t\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
 
-              // STEP T2.1.2. NORMALS ESTIMATION *******************************************************************************************************************
+              // STEP T3.1.2. NORMALS ESTIMATION *******************************************************************************************************************
               // ***************************************************************************************************************************************************
               // This step deals with normals computation and concatenation between point cloud and normals cloud.
 
               tt.tic();
-              pcl::console::print_error ("\n\t\tSTEP T2.1.2. Normals computation...");
+              pcl::console::print_error ("\n\t\tSTEP T3.1.2. Normals computation...");
 
               processing_object.CloudNormalsComputation(&extracted_clusters[cluster_idx]);
 
               pcl::console::print_error ("\tdone\n");
               std::cout << "\t\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
   
-              // STEP T2.1.3. OUR-CVFH SIGNATURE ESTIMATION ********************************************************************************************************
+              // STEP T3.1.3. OUR-CVFH SIGNATURE ESTIMATION ********************************************************************************************************
               // ***************************************************************************************************************************************************
 
               // OUR-CVFH estimation class instantiation
               OURCVFHEstimation ourcvfh_object;
 
               tt.tic();
-              pcl::console::print_error ("\n\t\tSTEP T2.1.3 OUR-CVFH signature estimation...");
+              pcl::console::print_error ("\n\t\tSTEP T3.1.3 OUR-CVFH signature estimation...");
 
               // ourcvfh_object.CloudOURCVFHComputation(&extracted_clusters[cluster_idx]);
               if (cluster_idx == 0)
@@ -250,9 +261,9 @@ void MainLoop::TrainingStage()
               pcl::console::print_error ("\tdone\n");
               std::cout << "\t\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
 
-              // STEP T2.1.4 SAVING THE CLOUD ***********************************************************************************************************************
+              // STEP T3.1.4 SAVING THE CLOUD ***********************************************************************************************************************
               // ****************************************************************************************************************************************************
-              pcl::console::print_error ("\n\t\tSTEP T2.1.4. Cloud storage...\n");
+              pcl::console::print_error ("\n\t\tSTEP T3.1.4. Cloud storage...\n");
 
               updated_dir = extracted_clusters[cluster_idx].SaveCloud();
 
@@ -277,11 +288,11 @@ void MainLoop::TrainingStage()
 
           std::cout << std::endl << "---> DOMINANT PLANE AND CLUSTERS EXTRACTION total execution time: " << tt.toc() << " ms" << std::endl << std::endl;
                
-          // STEP T3. KDTREE UPDATE *********************************************************************************************************************************
+          // STEP T4. KDTREE UPDATE *********************************************************************************************************************************
           // ********************************************************************************************************************************************************
 
           tt.tic();
-          pcl::console::print_error ("\nSTEP T3. KD-TREES UPDATE\n");
+          pcl::console::print_error ("\nSTEP T4. KD-TREES UPDATE\n");
           
           // Prcessing the modified subfolder vector. 
           if (!updated_folders[0].compare("NO_CLUSTER_SAVED"))
@@ -306,12 +317,12 @@ void MainLoop::TrainingStage()
               update_object.UpdateObject(updated_folders[loop_idx]);
               std::cout << "\t(" << update_object.GetFoundSignatureNumber() << " histograms found)" << std::endl;
               
-              // STEP T3.1 OUR-CVFH HISTOGRAM CONVERSION TO FLANN FORMAT *********************************************************************************************
+              // STEP T4.1 OUR-CVFH HISTOGRAM CONVERSION TO FLANN FORMAT *********************************************************************************************
               // *****************************************************************************************************************************************************
               // The first step of the update procedure deals with the conversion of OUR-CVFH histogram point cloud into a Flann matrix. Once the matrix is created 
               // and filled it is saved in the current subfolder of the DB.
               tt_update.tic();
-              pcl::console::print_error ("\tSTEP T3.1. OUR-CVFH histrogram conversion to Flann format...");
+              pcl::console::print_error ("\tSTEP T4.1. OUR-CVFH histrogram conversion to Flann format...");
 
               // Flann conversion
               update_object.OURCVFHFlannConversion(updated_folders[loop_idx]);
@@ -319,12 +330,12 @@ void MainLoop::TrainingStage()
               pcl::console::print_error ("\tdone\n");
               std::cout << "\t<(execution time: " << tt_update.toc() << " ms)>" << std::endl;
 
-              // STEP T3.2 OUR-CVFH HISTOGRAM FILE NAME STORAGE ******************************************************************************************************
+              // STEP T4.2 OUR-CVFH HISTOGRAM FILE NAME STORAGE ******************************************************************************************************
               // *****************************************************************************************************************************************************
               // The second step consist in adding (in append mode) the new histrogrms paths to the file containing names of hall istograms of the current subfolder.
 
               tt_update.tic();
-              pcl::console::print_error ("\n\tSTEP T3.2. OUR-CVFH histograms path add...");
+              pcl::console::print_error ("\n\tSTEP T4.2. OUR-CVFH histograms path add...");
 
               // Name list update
               update_object.HistogramNameStorage(updated_folders[loop_idx]);
@@ -332,12 +343,12 @@ void MainLoop::TrainingStage()
               pcl::console::print_error ("\tdone\n");
               std::cout << "\t<(execution time: " << tt_update.toc() << " ms)>" << std::endl;
 
-              // STEP T3.3 CREATION, BUILD AND STORAGE OF THE KD-TREE ***********************************************************************************************
+              // STEP T4.3 CREATION, BUILD AND STORAGE OF THE KD-TREE ***********************************************************************************************
               // ****************************************************************************************************************************************************
               // The last step consists in creating and build a tree index about all elements of the current subfolder.
 
               tt_update.tic();
-              pcl::console::print_error ("\n\tSTEP T3.3. Kd-Tree index build and storage...");
+              pcl::console::print_error ("\n\tSTEP T4.3. Kd-Tree index build and storage...");
 
               // Index building and storage
               update_object.BuildOURCVFHTreeIndex(updated_folders[loop_idx]);
@@ -413,17 +424,29 @@ MainLoop::NewSceneStage()
   // pcl::PointCloud<pcl::PointXYZ>::Ptr original_acquisition (new pcl::PointCloud<pcl::PointXYZ>);
   // original_acquisition = reference_scene.GetCloud();
 
-  // STEP NS2. DOMINANT PLANE AND CLUSTERS EXTRACTION **********************************************************************************************************
+  // STEP NS2. PASS-THROUGH FILTER APPLICATION **********************************************************************************************************
+  // **********************************************************************************************************************************************************
+
+  tt.tic();
+  pcl::console::print_error ("\nSTEP NS2. PASS-THROUGH FILTER APPLICATION");
+
+  // Processing class instantiation
+  CloudProcessing processing_object;
+
+  // Filter application
+  // processing_object.PassThroughFilter(reference_scene);
+
+  std::cout << std::endl << "---> PASS-THROUGH FILTER APPLICATION total execution time: " << tt.toc() << " ms" << std::endl << std::endl;
+
+
+  // STEP NS3. DOMINANT PLANE AND CLUSTERS EXTRACTION **********************************************************************************************************
   // **********************************************************************************************************************************************************
 
   // Vector containing the extracted clusters objects
   std::vector<Cloud, Eigen::aligned_allocator<Cloud> > extracted_clusters;
         
   tt.tic();
-  pcl::console::print_error ("\nSTEP NS2. DOMINANT PLANE AND CLUSTERS EXTRACTION\n");
-
-  // Processing class instantiation
-  CloudProcessing processing_object;
+  pcl::console::print_error ("\nSTEP NS3. DOMINANT PLANE AND CLUSTERS EXTRACTION\n");
 
   extracted_clusters = processing_object.ExtractClustersFromCloud(reference_scene);
    
@@ -433,15 +456,15 @@ MainLoop::NewSceneStage()
     std::vector<std::string> updated_folders (1,"NO_CLUSTER_SAVED");
     bool first_storage = 1;
       
-    // STEP NS3. CLUSTERS OUR-CVFH SIGNATURE DETERMINATION AND DB SEARCH *****************************************************************************************
+    // STEP NS4. CLUSTERS OUR-CVFH SIGNATURE DETERMINATION AND DB SEARCH *****************************************************************************************
     // ***********************************************************************************************************************************************************
     // The next step is implement for each found cluster. It deals with the determination of OUR-CVFH signature and woth the search of that signture in the DB.
-    pcl::console::print_error ("\nSTEP NS3. CLUSTERS OUR-CVFH SIGNATURE DETERMINATION AND DB SEARCH");
+    pcl::console::print_error ("\nSTEP NS4. CLUSTERS OUR-CVFH SIGNATURE DETERMINATION AND DB SEARCH");
 
     for (int cluster_idx = 0; cluster_idx < extracted_clusters.size(); ++cluster_idx)
     {
 
-      // STEP NS3.1. VOXEL GRID FILTER APPLICATION ***************************************************************************************************************
+      // STEP NS4.1. VOXEL GRID FILTER APPLICATION ***************************************************************************************************************
       // *********************************************************************************************************************************************************
       // In this step a Voxel grid filter is applied in order to uniform the data points density
       
@@ -454,7 +477,7 @@ MainLoop::NewSceneStage()
       bool corr_found = 0;
 
       tt.tic();
-      pcl::console::print_error("\n\tSTEP NS3.1. VOXEL GRID FILTER APPLICATION...");
+      pcl::console::print_error("\n\tSTEP NS4.1. VOXEL GRID FILTER APPLICATION...");
                             
       processing_object.VoxelGridFilter(&extracted_clusters[cluster_idx]);
 
@@ -462,19 +485,19 @@ MainLoop::NewSceneStage()
       std::cout << "\t(" << extracted_clusters[cluster_idx].GetCloud()->points.size() << " data points)" << std::endl
                 << "\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
 
-      // STEP NS3.2. NORMALS ESTIMATION **************************************************************************************************************************
+      // STEP NS4.2. NORMALS ESTIMATION **************************************************************************************************************************
       // *********************************************************************************************************************************************************
       // This step deals with normals computation and concatenation between point cloud and normals cloud.
 
       tt.tic();
-      pcl::console::print_error ("\n\tSTEP NS3.2. NORMALS COMPUTATION...");
+      pcl::console::print_error ("\n\tSTEP NS4.2. NORMALS COMPUTATION...");
 
       processing_object.CloudNormalsComputation(&extracted_clusters[cluster_idx]);
 
       pcl::console::print_error ("\tdone\n");
       std::cout << "\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
   
-      // STEP NS3.3. OUR-CVFH SIGNATURE ESTIMATION ***************************************************************************************************************
+      // STEP NS4.3. OUR-CVFH SIGNATURE ESTIMATION ***************************************************************************************************************
       // *********************************************************************************************************************************************************
       // In this step the OUR-CVFH signature is calculated 
 
@@ -482,7 +505,7 @@ MainLoop::NewSceneStage()
       OURCVFHEstimation ourcvfh_object;
 
       tt.tic();
-      pcl::console::print_error ("\n\tSTEP NS3.3. OUR-CVFH SIGNATURE ESTIMATION...");
+      pcl::console::print_error ("\n\tSTEP NS4.3. OUR-CVFH SIGNATURE ESTIMATION...");
 
       // ourcvfh_object.CloudOURCVFHComputation(&extracted_clusters[cluster_idx]);
       if (cluster_idx == 0)
@@ -495,17 +518,17 @@ MainLoop::NewSceneStage()
       pcl::console::print_error ("\tdone\n");
       std::cout << "\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
 
-      // STEP NS3.3.1 OUR-CVFH SIGNATURE TRANSFORMATION TO FLOAT VECTOR ******************************************************************************************
+      // STEP NS4.3.1 OUR-CVFH SIGNATURE TRANSFORMATION TO FLOAT VECTOR ******************************************************************************************
       // *********************************************************************************************************************************************************
       // In this step the OUR-CVFH signature is tranformed in a float vector (attribute of the class Cloud)
 
-      pcl::console::print_error ("\n\t\tSTEP NS3.3.1 OUR-CVFH signature transformation...");
+      pcl::console::print_error ("\n\t\tSTEP NS4.3.1 OUR-CVFH signature transformation...");
 
       extracted_clusters[cluster_idx].SetOURCVFHVector();
 
       pcl::console::print_error ("\tdone\n");
 
-      // STEP NS3.4 DB SEARCH ************************************************************************************************************************************
+      // STEP NS4.4 DB SEARCH ************************************************************************************************************************************
       // *********************************************************************************************************************************************************
       // In this step the main folder of the DB is searched in order to find a correspondence with the extracted cluster histogram. Each sub-folder is explored 
       // searching the correspondent Kd-Tree.
@@ -516,7 +539,7 @@ MainLoop::NewSceneStage()
       boost::filesystem::path DB_base_dir = "../ObjectDB/";
 
       tt.tic();
-      pcl::console::print_error ("\n\tSTEP NS3.4. DB SEARCH...");
+      pcl::console::print_error ("\n\tSTEP NS4.4. DB SEARCH...");
 
       if (!boost::filesystem::exists (DB_base_dir) && !boost::filesystem::is_directory (DB_base_dir))
       {
@@ -613,12 +636,12 @@ MainLoop::NewSceneStage()
           new_model_update.UpdateObject(search_path);
           std::cout << "\t(" << search_object.GetFoundSignatureNumber() << " histograms found)" << std::endl;
               
-          // STEP NS3.4.1. OUR-CVFH HISTOGRAM CONVERSION TO FLANN FORMAT *********************************************************************************************
+          // STEP NS4.4.1. OUR-CVFH HISTOGRAM CONVERSION TO FLANN FORMAT *********************************************************************************************
           // *****************************************************************************************************************************************************
           // The first step of the update procedure deals with the conversion of OUR-CVFH histogram point cloud into a Flann matrix. Once the matrix is created 
           // and filled it is saved in the current subfolder of the DB.
           tt_update.tic();
-          pcl::console::print_error ("\tSTEP NS3.4.1. OUR-CVFH histrogram conversion to Flann format...");
+          pcl::console::print_error ("\tSTEP NS4.4.1. OUR-CVFH histrogram conversion to Flann format...");
 
           // Flann conversion
           new_model_update.OURCVFHFlannConversion(search_path);
@@ -631,7 +654,7 @@ MainLoop::NewSceneStage()
           // The second step consist in adding (in append mode) the new histrogrms paths to the file containing names of hall istograms of the current subfolder.
 
           tt_update.tic();
-          pcl::console::print_error ("\n\tSTEP NS3.4.2. OUR-CVFH histograms path add...");
+          pcl::console::print_error ("\n\tSTEP NS4.4.2. OUR-CVFH histograms path add...");
 
           // Name list update
           new_model_update.HistogramNameStorage(search_path);
@@ -644,7 +667,7 @@ MainLoop::NewSceneStage()
           // The last step consists in creating and build a tree index about all elements of the current subfolder.
 
           tt_update.tic();
-          pcl::console::print_error ("\n\tSTEP NS3.4.3. Kd-Tree index build and storage...");
+          pcl::console::print_error ("\n\tSTEP NS4.4.3. Kd-Tree index build and storage...");
 
           // Index building and storage
           new_model_update.BuildOURCVFHTreeIndex(search_path);
@@ -669,20 +692,20 @@ MainLoop::NewSceneStage()
     }
   }
 
-  // STEP NS4 SAVING OBJECTS INFOS *********************************************************************************************************************************
+  // STEP NS5. SAVING OBJECTS INFOS *********************************************************************************************************************************
   // ***************************************************************************************************************************************************************
   // In this section the vector <correspondance_folder_list> is saved as ObjectsList.list. 
   tt.tic();
-  pcl::console::print_error ("STEP NS4. SCENE STORAGE\n");
+  pcl::console::print_error ("STEP NS5. SCENE STORAGE\n");
 
   // Saving the scene
   scene_object.SaveScene();
 
   std::cout << std::endl <<  "---> SCENE STORAGE total execution time: " << tt.toc() << " ms" << std::endl << std::endl;
 
-  // STEP NS5 VISUALIZING THE SCENE ********************************************************************************************************************************
+  // STEP NS6. VISUALIZING THE SCENE ********************************************************************************************************************************
   // ***************************************************************************************************************************************************************
-  pcl::console::print_error ("STEP NS5. SCENE VISUALIZATION\n");
+  pcl::console::print_error ("STEP NS6. SCENE VISUALIZATION\n");
   pcl::console::print_error ("Please quit the visualization to continue\n\n");
 
   scene_object.VisualizeRefScene(extracted_clusters);
@@ -714,7 +737,7 @@ MainLoop::KukaVisionStage()
   // Time counter
   pcl::console::TicToc tt;
 
-  // STEP KV1. DEFINITION OF THE REFERENCE SCENE *******************************************************************************************************************
+  // STEP KV1. SELECTION OF THE REFERENCE SCENE *******************************************************************************************************************
   // ***************************************************************************************************************************************************************
   // The preliminar step consists in asking the user to specify the reference scene with which compare the actual scene acquired by kinect.
 
@@ -723,7 +746,7 @@ MainLoop::KukaVisionStage()
   // String containing user choice about a reselection of sscene
   std::string another_scene;
 
-  pcl::console::print_error ("\nSTEP KV1. REFERENCE SCENE DEFINITION\n");
+  pcl::console::print_error ("\nSTEP KV1. REFERENCE SCENE SELECTION\n");
   
   while (true)
   {
@@ -787,17 +810,28 @@ MainLoop::KukaVisionStage()
   pcl::PointCloud<pcl::PointXYZ>::Ptr original_acquisition (new pcl::PointCloud<pcl::PointXYZ>);
   original_acquisition = modified_scene.GetCloud();
 
-  // STEP KV3. DOMINANT PLANE AND CLUSTERS EXTRACTION **********************************************************************************************************
+  // STEP NS2. PASS-THROUGH FILTER APPLICATION ****************************************************************************************************************
+  // **********************************************************************************************************************************************************
+
+  tt.tic();
+  pcl::console::print_error ("\nSTEP KV3. PASS-THROUGH FILTER APPLICATION");
+
+  // Processing class instantiation
+  CloudProcessing processing_object;
+
+  // Filter application
+  // processing_object.PassThroughFilter(modified_scene);
+
+  std::cout << std::endl << "---> PASS-THROUGH FILTER APPLICATION total execution time: " << tt.toc() << " ms" << std::endl << std::endl;
+
+  // STEP KV4. DOMINANT PLANE AND CLUSTERS EXTRACTION **********************************************************************************************************
   // **********************************************************************************************************************************************************
 
   // Vector containing the extracted clusters objects
   std::vector<Cloud, Eigen::aligned_allocator<Cloud> > extracted_clusters;
         
   tt.tic();
-  pcl::console::print_error ("\nSTEP KV3. DOMINANT PLANE AND CLUSTERS EXTRACTION\n");
-
-  // Processing class instantiation
-  CloudProcessing processing_object;
+  pcl::console::print_error ("\nSTEP KV4. DOMINANT PLANE AND CLUSTERS EXTRACTION\n");
 
   extracted_clusters = processing_object.ExtractClustersFromCloud(modified_scene);
    
@@ -806,10 +840,10 @@ MainLoop::KukaVisionStage()
   {
     std::vector<std::string> updated_folders (1,"NO_CLUSTER_SAVED");
       
-    // STEP KV4. CLUSTERS OUR-CVFH SIGNATURE DETERMINATION AND DB SEARCH *****************************************************************************************
+    // STEP KV5. CLUSTERS OUR-CVFH SIGNATURE DETERMINATION AND DB SEARCH *****************************************************************************************
     // ***********************************************************************************************************************************************************
     // The next step is implement for each found cluster. It deals with the determination of OUR-CVFH signature and woth the search of that signture in the DB.
-    pcl::console::print_error ("\nSTEP KV4. CLUSTERS OUR-CVFH SIGNATURE DETERMINATION AND DB SEARCH\n");
+    pcl::console::print_error ("\nSTEP KV5. CLUSTERS OUR-CVFH SIGNATURE DETERMINATION AND DB SEARCH\n");
 
     for (int cluster_idx = 0; cluster_idx < extracted_clusters.size(); ++cluster_idx)
     {
@@ -826,7 +860,7 @@ MainLoop::KukaVisionStage()
       bool corr_found = 0;
 
       tt.tic();
-      pcl::console::print_error("\n\tSTEP KV4.1. VOXEL GRID FILTER APPLICATION...");
+      pcl::console::print_error("\n\tSTEP KV5.1. VOXEL GRID FILTER APPLICATION...");
                             
       processing_object.VoxelGridFilter(&extracted_clusters[cluster_idx]);
 
@@ -834,19 +868,19 @@ MainLoop::KukaVisionStage()
       std::cout << "\t(" << extracted_clusters[cluster_idx].GetCloud()->points.size() << " data points)" << std::endl
                 << "\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
 
-      // STEP KV4.2. NORMALS ESTIMATION **************************************************************************************************************************
+      // STEP KV5.2. NORMALS ESTIMATION **************************************************************************************************************************
       // *********************************************************************************************************************************************************
       // This step deals with normals computation and concatenation between point cloud and normals cloud.
 
       tt.tic();
-      pcl::console::print_error ("\n\tSTEP KV4.2. NORMALS COMPUTATION...");
+      pcl::console::print_error ("\n\tSTEP KV5.2. NORMALS COMPUTATION...");
 
       processing_object.CloudNormalsComputation(&extracted_clusters[cluster_idx]);
 
       pcl::console::print_error ("\tdone\n");
       std::cout << "\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
   
-      // STEP KV4.3. OUR-CVFH SIGNATURE ESTIMATION ***************************************************************************************************************
+      // STEP KV5.3. OUR-CVFH SIGNATURE ESTIMATION ***************************************************************************************************************
       // *********************************************************************************************************************************************************
       // In this step the OUR-CVFH signature is calculated 
 
@@ -854,7 +888,7 @@ MainLoop::KukaVisionStage()
       OURCVFHEstimation ourcvfh_object;
 
       tt.tic();
-      pcl::console::print_error ("\n\tSTEP KV4.3. OUR-CVFH SIGNATURE ESTIMATION...");
+      pcl::console::print_error ("\n\tSTEP KV5.3. OUR-CVFH SIGNATURE ESTIMATION...");
 
       // ourcvfh_object.CloudOURCVFHComputation(&extracted_clusters[cluster_idx]);
       if (cluster_idx == 0)
@@ -867,17 +901,17 @@ MainLoop::KukaVisionStage()
       pcl::console::print_error ("\tdone\n");
       std::cout << "\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
 
-      // STEP KV4.3.1 OUR-CVFH SIGNATURE TRANSFORMATION TO FLOAT VECTOR ******************************************************************************************
+      // STEP KV5.3.1 OUR-CVFH SIGNATURE TRANSFORMATION TO FLOAT VECTOR ******************************************************************************************
       // *********************************************************************************************************************************************************
       // In this step the OUR-CVFH signature is tranformed in a float vector (attribute of the class Cloud)
 
-      pcl::console::print_error ("\n\t\tSTEP KV4.3.1 OUR-CVFH signature transformation...");
+      pcl::console::print_error ("\n\t\tSTEP KV5.3.1 OUR-CVFH signature transformation...");
 
       extracted_clusters[cluster_idx].SetOURCVFHVector();
 
       pcl::console::print_error ("\tdone\n");
 
-      // STEP KV4.4 DB SEARCH ************************************************************************************************************************************
+      // STEP KV5.4 DB SEARCH ************************************************************************************************************************************
       // *********************************************************************************************************************************************************
       // The ObjectDB search is performed checking only folders in the variable <subfolder_list> of the object <ref_scene_management>
 
@@ -887,7 +921,7 @@ MainLoop::KukaVisionStage()
       boost::filesystem::path DB_base_dir = "../SceneDB/";
 
       tt.tic();
-      pcl::console::print_error ("\n\tSTEP KV4.4. DB SEARCH...");
+      pcl::console::print_error ("\n\tSTEP KV5.4. DB SEARCH...");
 
       if (!boost::filesystem::exists (DB_base_dir) && !boost::filesystem::is_directory (DB_base_dir))
       {

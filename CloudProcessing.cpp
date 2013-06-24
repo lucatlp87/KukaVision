@@ -13,6 +13,7 @@
 #include <pcl/console/print.h>
 #include <pcl/console/time.h>
 #include <pcl/filters/extract_indices.h>
+#include <pcl/filters/passthrough.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/kdtree/kdtree.h>
@@ -40,6 +41,30 @@ CloudProcessing::~CloudProcessing() {}
 // ##################################################################################################################################################################
 
 // PASS-THROUGH FILTER **********************************************************************************************************************************************
+void 
+CloudProcessing::PassThroughFilter(Cloud input_cloud)
+{
+	// The function deals with the application of a Pass-through filter in order to extract from the acquired point cloud the region corresponding to the tabletop
+
+	// Cloud pointer
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr (new pcl::PointCloud<pcl::PointXYZ>);
+	cloud_ptr = input_cloud.GetCloud();
+	// Pass-through filter object
+	pcl::PassThrough<pcl::PointXYZ> PTfilter;
+
+	// Filter object initialization
+	PTfilter.setInputCloud (cloud_ptr);
+	PTfilter.setFilterFieldName ("x");
+  	PTfilter.setFilterLimits (0.0, 1.0);
+  	PTfilter.setFilterFieldName ("y");
+  	PTfilter.setFilterLimits (0.0, 1.0);
+  	PTfilter.setFilterFieldName ("z");
+  	PTfilter.setFilterLimits (0.0, 1.0);
+
+  	// Filter application
+  	PTfilter.filter (*cloud_ptr);
+  	input_cloud.SetCloud(*cloud_ptr);
+}
 
 // VOXEL GRID FILTER ************************************************************************************************************************************************
 void 

@@ -41,8 +41,11 @@ The second step deals with the definition and the storage of a reference scene.
 The first part of the procedure is the same of the previous step. The only difference is that, in the previouse case, the scene was made of only one object (the one of which the user was defining the model) while in this case the scene is composed by several objects.
 Once all clusters are extracted from the acquired cloud, each of them is upsampled (using MLS again) and the corresponding OUR-CVFH signature is estimated. The signature is used to search the DB for a correspondence. If a correspondence is found the object become part of the scene. If not the user is asked if save the current cluster as a new model or ignore it. 
 When all clusters are recognized (or ignored) the scene is saved in the DB dedicated to reference scenes (the user is asked to specify the name of the scene). The DB is composed of folders and each folder corresponds to a scene. In each folder the following items are stored:
-		- a .pcd file corresponding to the cloud of the whole scene acquired from Kinect
-		- a .txt file containing infos about objects part of the scene (in particular each object has an ID, a type and the 			  path to the corresponding folder in the objects models DB)
+
+	- a .pcd file corresponding to the cloud of the whole scene acquired from Kinect
+
+	- a .txt file containing infos about objects part of the scene (in particular each object has an ID, a type and the 		  path to the corresponding folder in the objects models DB)
+
 At last, a visualizer will open showing the whole scene and each recognized object with some information (type and reference pose)
 
 - KUKAVISION STAGE

@@ -4,7 +4,6 @@ TODO
 - add a calibration routine for the Kinect
 
 ---> class CloudProcessing
-- add the MLS upsampling function <--- <---
 - set the pass-through filter
 
 --> class OURCVFHEstimation
@@ -17,5 +16,5 @@ TODO
 - define the class and all functions 
 
 --> class MainLoop
-- implement the logic of Kuka movements  <---
-- erase function SimpleVisualizer when no more needed
+-check if somethign is not working fine!
+

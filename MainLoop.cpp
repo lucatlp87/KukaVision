@@ -185,7 +185,8 @@ void MainLoop::TrainingStage()
             // User choice
             std::string save_cloud;
 
-            pcl::console::print_error("\n\tCLUSTER - %d (%d data points)\n", cluster_idx+1, extracted_clusters[cluster_idx].GetCloud()->points.size());
+            pcl::console::print_error("\n\tCLUSTER - %d (%d data points)", cluster_idx+1, extracted_clusters[cluster_idx].GetCloud()->points.size());
+            pcl::console::print_error(" -----------------------------------------------------------------------\n");
             
             // VISUALIZING THE CLOUD
             std::cout << " \tCluster visualization " << std::flush;
@@ -220,34 +221,22 @@ void MainLoop::TrainingStage()
               // ***************************************************************************************************************************************************
               // In this step a Voxel grid filter is applied in order to uniform the data points density
               tt.tic();
-              pcl::console::print_error("\n\t\tSTEP T4.1. Voxel grid filter application...");
+              pcl::console::print_error("\n\t\tSTEP T4.1. MLS filter application and normals computation...");
                             
-              processing_object.VoxelGridFilter(&extracted_clusters[cluster_idx]);
+              processing_object.MLSFilterAndNormalsComputation(&extracted_clusters[cluster_idx]);
 
               pcl::console::print_error ("\tdone\n");
               std::cout << "\t\t(" << extracted_clusters[cluster_idx].GetCloud()->points.size() << " data points)" << std::endl
                         << "\t\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
 
-              // STEP T4.2. NORMALS ESTIMATION *******************************************************************************************************************
-              // ***************************************************************************************************************************************************
-              // This step deals with normals computation and concatenation between point cloud and normals cloud.
-
-              tt.tic();
-              pcl::console::print_error ("\n\t\tSTEP T4.2. Normals computation...");
-
-              processing_object.CloudNormalsComputation(&extracted_clusters[cluster_idx]);
-
-              pcl::console::print_error ("\tdone\n");
-              std::cout << "\t\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
-  
-              // STEP T4.3. OUR-CVFH SIGNATURE ESTIMATION ********************************************************************************************************
+              // STEP T4.2. OUR-CVFH SIGNATURE ESTIMATION ********************************************************************************************************
               // ***************************************************************************************************************************************************
 
-              // OUR-CVFH estimation class instantiation
+              // OUR-CVFH estimation class 
               OURCVFHEstimation ourcvfh_object;
 
               tt.tic();
-              pcl::console::print_error ("\n\t\tSTEP T4.3 OUR-CVFH signature estimation...");
+              pcl::console::print_error ("\n\t\tSTEP T4.2. OUR-CVFH signature estimation...");
 
               // ourcvfh_object.CloudOURCVFHComputation(&extracted_clusters[cluster_idx]);
               if (cluster_idx == 0)
@@ -261,9 +250,9 @@ void MainLoop::TrainingStage()
               pcl::console::print_error ("\tdone\n");
               std::cout << "\t\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
 
-              // STEP T4.4 SAVING THE CLOUD ***********************************************************************************************************************
+              // STEP T4.3. SAVING THE CLOUD ***********************************************************************************************************************
               // ****************************************************************************************************************************************************
-              pcl::console::print_error ("\n\t\tSTEP T4.4. Cloud storage...\n");
+              pcl::console::print_error ("\n\t\tSTEP T4.3. Cloud storage...\n");
 
               updated_dir = extracted_clusters[cluster_idx].SaveCloud();
 
@@ -463,6 +452,7 @@ MainLoop::NewSceneStage()
 
     for (int cluster_idx = 0; cluster_idx < extracted_clusters.size(); ++cluster_idx)
     {
+      std::cout << "\n\tCLUSTER N.  " << cluster_idx+1 << "--------------------------------------------------------------------------" << std::flush;
 
       // STEP NS4.1. VOXEL GRID FILTER APPLICATION ***************************************************************************************************************
       // *********************************************************************************************************************************************************
@@ -477,27 +467,15 @@ MainLoop::NewSceneStage()
       bool corr_found = 0;
 
       tt.tic();
-      pcl::console::print_error("\n\tSTEP NS4.1. VOXEL GRID FILTER APPLICATION...");
+      pcl::console::print_error("\n\tSTEP NS4.1. MLS FILTER APPLICATION AND NORMALS COMPUTATION...");
                             
-      processing_object.VoxelGridFilter(&extracted_clusters[cluster_idx]);
+      processing_object.MLSFilterAndNormalsComputation(&extracted_clusters[cluster_idx]);
 
       pcl::console::print_error ("\tdone\n");
       std::cout << "\t(" << extracted_clusters[cluster_idx].GetCloud()->points.size() << " data points)" << std::endl
                 << "\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
 
-      // STEP NS4.2. NORMALS ESTIMATION **************************************************************************************************************************
-      // *********************************************************************************************************************************************************
-      // This step deals with normals computation and concatenation between point cloud and normals cloud.
-
-      tt.tic();
-      pcl::console::print_error ("\n\tSTEP NS4.2. NORMALS COMPUTATION...");
-
-      processing_object.CloudNormalsComputation(&extracted_clusters[cluster_idx]);
-
-      pcl::console::print_error ("\tdone\n");
-      std::cout << "\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
-  
-      // STEP NS4.3. OUR-CVFH SIGNATURE ESTIMATION ***************************************************************************************************************
+      // STEP NS4.2. OUR-CVFH SIGNATURE ESTIMATION ***************************************************************************************************************
       // *********************************************************************************************************************************************************
       // In this step the OUR-CVFH signature is calculated 
 
@@ -505,7 +483,7 @@ MainLoop::NewSceneStage()
       OURCVFHEstimation ourcvfh_object;
 
       tt.tic();
-      pcl::console::print_error ("\n\tSTEP NS4.3. OUR-CVFH SIGNATURE ESTIMATION...");
+      pcl::console::print_error ("\n\tSTEP NS4.2. OUR-CVFH SIGNATURE ESTIMATION...");
 
       // ourcvfh_object.CloudOURCVFHComputation(&extracted_clusters[cluster_idx]);
       if (cluster_idx == 0)
@@ -518,17 +496,17 @@ MainLoop::NewSceneStage()
       pcl::console::print_error ("\tdone\n");
       std::cout << "\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
 
-      // STEP NS4.3.1 OUR-CVFH SIGNATURE TRANSFORMATION TO FLOAT VECTOR ******************************************************************************************
+      // STEP NS4.2.1 OUR-CVFH SIGNATURE TRANSFORMATION TO FLOAT VECTOR ******************************************************************************************
       // *********************************************************************************************************************************************************
       // In this step the OUR-CVFH signature is tranformed in a float vector (attribute of the class Cloud)
 
-      pcl::console::print_error ("\n\t\tSTEP NS4.3.1 OUR-CVFH signature transformation...");
+      pcl::console::print_error ("\n\t\tSTEP NS4.2.1 OUR-CVFH signature transformation...");
 
       extracted_clusters[cluster_idx].SetOURCVFHVector();
 
       pcl::console::print_error ("\tdone\n");
 
-      // STEP NS4.4 DB SEARCH ************************************************************************************************************************************
+      // STEP NS4.3. DB SEARCH ************************************************************************************************************************************
       // *********************************************************************************************************************************************************
       // In this step the main folder of the DB is searched in order to find a correspondence with the extracted cluster histogram. Each sub-folder is explored 
       // searching the correspondent Kd-Tree.
@@ -539,7 +517,7 @@ MainLoop::NewSceneStage()
       boost::filesystem::path DB_base_dir = "../ObjectDB/";
 
       tt.tic();
-      pcl::console::print_error ("\n\tSTEP NS4.4. DB SEARCH...");
+      pcl::console::print_error ("\n\tSTEP NS4.3. DB SEARCH...");
 
       if (!boost::filesystem::exists (DB_base_dir) && !boost::filesystem::is_directory (DB_base_dir))
       {
@@ -636,12 +614,12 @@ MainLoop::NewSceneStage()
           new_model_update.UpdateObject(search_path);
           std::cout << "\t(" << search_object.GetFoundSignatureNumber() << " histograms found)" << std::endl;
               
-          // STEP NS4.4.1. OUR-CVFH HISTOGRAM CONVERSION TO FLANN FORMAT *********************************************************************************************
+          // STEP NS4.3.1. OUR-CVFH HISTOGRAM CONVERSION TO FLANN FORMAT *********************************************************************************************
           // *****************************************************************************************************************************************************
           // The first step of the update procedure deals with the conversion of OUR-CVFH histogram point cloud into a Flann matrix. Once the matrix is created 
           // and filled it is saved in the current subfolder of the DB.
           tt_update.tic();
-          pcl::console::print_error ("\tSTEP NS4.4.1. OUR-CVFH histrogram conversion to Flann format...");
+          pcl::console::print_error ("\tSTEP NS4.3.1. OUR-CVFH histrogram conversion to Flann format...");
 
           // Flann conversion
           new_model_update.OURCVFHFlannConversion(search_path);
@@ -649,12 +627,12 @@ MainLoop::NewSceneStage()
           pcl::console::print_error ("\tdone\n");
           std::cout << "\t<(execution time: " << tt_update.toc() << " ms)>" << std::endl;
 
-          // STEP NS3.4.2. OUR-CVFH HISTOGRAM FILE NAME STORAGE ******************************************************************************************************
+          // STEP NS3.3.2. OUR-CVFH HISTOGRAM FILE NAME STORAGE ******************************************************************************************************
           // *****************************************************************************************************************************************************
           // The second step consist in adding (in append mode) the new histrogrms paths to the file containing names of hall istograms of the current subfolder.
 
           tt_update.tic();
-          pcl::console::print_error ("\n\tSTEP NS4.4.2. OUR-CVFH histograms path add...");
+          pcl::console::print_error ("\n\tSTEP NS4.3.2. OUR-CVFH histograms path add...");
 
           // Name list update
           new_model_update.HistogramNameStorage(search_path);
@@ -662,12 +640,12 @@ MainLoop::NewSceneStage()
           pcl::console::print_error ("\tdone\n");
           std::cout << "\t<(execution time: " << tt_update.toc() << " ms)>" << std::endl;
 
-          // STEP NS3.4.3. CREATION, BUILD AND STORAGE OF THE KD-TREE ***********************************************************************************************
+          // STEP NS4.3.3. CREATION, BUILD AND STORAGE OF THE KD-TREE ***********************************************************************************************
           // ****************************************************************************************************************************************************
           // The last step consists in creating and build a tree index about all elements of the current subfolder.
 
           tt_update.tic();
-          pcl::console::print_error ("\n\tSTEP NS4.4.3. Kd-Tree index build and storage...");
+          pcl::console::print_error ("\n\tSTEP NS4.3.3. Kd-Tree index build and storage...");
 
           // Index building and storage
           new_model_update.BuildOURCVFHTreeIndex(search_path);
@@ -860,27 +838,15 @@ MainLoop::KukaVisionStage()
       bool corr_found = 0;
 
       tt.tic();
-      pcl::console::print_error("\n\tSTEP KV5.1. VOXEL GRID FILTER APPLICATION...");
+      pcl::console::print_error("\n\tSTEP KV5.1. MLS FILTER APPLICATION AND NORMALS COMPUTATION...");
                             
-      processing_object.VoxelGridFilter(&extracted_clusters[cluster_idx]);
+      processing_object.MLSFilterAndNormalsComputation(&extracted_clusters[cluster_idx]);
 
       pcl::console::print_error ("\tdone\n");
       std::cout << "\t(" << extracted_clusters[cluster_idx].GetCloud()->points.size() << " data points)" << std::endl
                 << "\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
 
-      // STEP KV5.2. NORMALS ESTIMATION **************************************************************************************************************************
-      // *********************************************************************************************************************************************************
-      // This step deals with normals computation and concatenation between point cloud and normals cloud.
-
-      tt.tic();
-      pcl::console::print_error ("\n\tSTEP KV5.2. NORMALS COMPUTATION...");
-
-      processing_object.CloudNormalsComputation(&extracted_clusters[cluster_idx]);
-
-      pcl::console::print_error ("\tdone\n");
-      std::cout << "\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
-  
-      // STEP KV5.3. OUR-CVFH SIGNATURE ESTIMATION ***************************************************************************************************************
+      // STEP KV5.2. OUR-CVFH SIGNATURE ESTIMATION ***************************************************************************************************************
       // *********************************************************************************************************************************************************
       // In this step the OUR-CVFH signature is calculated 
 
@@ -888,7 +854,7 @@ MainLoop::KukaVisionStage()
       OURCVFHEstimation ourcvfh_object;
 
       tt.tic();
-      pcl::console::print_error ("\n\tSTEP KV5.3. OUR-CVFH SIGNATURE ESTIMATION...");
+      pcl::console::print_error ("\n\tSTEP KV5.2. OUR-CVFH SIGNATURE ESTIMATION...");
 
       // ourcvfh_object.CloudOURCVFHComputation(&extracted_clusters[cluster_idx]);
       if (cluster_idx == 0)
@@ -901,17 +867,17 @@ MainLoop::KukaVisionStage()
       pcl::console::print_error ("\tdone\n");
       std::cout << "\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
 
-      // STEP KV5.3.1 OUR-CVFH SIGNATURE TRANSFORMATION TO FLOAT VECTOR ******************************************************************************************
+      // STEP KV5.2.1 OUR-CVFH SIGNATURE TRANSFORMATION TO FLOAT VECTOR ******************************************************************************************
       // *********************************************************************************************************************************************************
       // In this step the OUR-CVFH signature is tranformed in a float vector (attribute of the class Cloud)
 
-      pcl::console::print_error ("\n\t\tSTEP KV5.3.1 OUR-CVFH signature transformation...");
+      pcl::console::print_error ("\n\t\tSTEP KV5.2.1 OUR-CVFH signature transformation...");
 
       extracted_clusters[cluster_idx].SetOURCVFHVector();
 
       pcl::console::print_error ("\tdone\n");
 
-      // STEP KV5.4 DB SEARCH ************************************************************************************************************************************
+      // STEP KV5.3 DB SEARCH ************************************************************************************************************************************
       // *********************************************************************************************************************************************************
       // The ObjectDB search is performed checking only folders in the variable <subfolder_list> of the object <ref_scene_management>
 
@@ -921,7 +887,7 @@ MainLoop::KukaVisionStage()
       boost::filesystem::path DB_base_dir = "../SceneDB/";
 
       tt.tic();
-      pcl::console::print_error ("\n\tSTEP KV5.4. DB SEARCH...");
+      pcl::console::print_error ("\n\tSTEP KV5.3. DB SEARCH...");
 
       if (!boost::filesystem::exists (DB_base_dir) && !boost::filesystem::is_directory (DB_base_dir))
       {
@@ -986,5 +952,4 @@ MainLoop::SimpleVisualizer()
   pcl::io::loadPCDFile("OneObjectScene.pcd",*cloud_ptr);
 
   scene.SetRefScene(cloud_ptr);
-  // scene.VisualizeRefScene();
 }

@@ -9,10 +9,9 @@
 //      T3. Dominant plane and clusters extraction. 
 //          T4. Cluster visualization and storage.
 //              For each found cluster it is visualized and the user is asked to choose to save it or not. If the choice is yes:
-//              T4.1. Voxel grid filter application
-//              T4.2. Normals computation
-//              T4.3. OUR-CVFH signature estimation
-//              T4.4. Cloud storage
+//              T4.1. MLS filter application and normals estimation
+//              T4.2. OUR-CVFH signature estimation
+//              T4.3. Cloud storage
 //      T5. Kd-Trees update. 
 //          For each folder updated in previous steps
 //          T5.1. OUR-CVFH histogram conversion to Flann format
@@ -27,15 +26,14 @@
 //      NS3. Dominant plane and clusters extraction
 //           NS.4. Clusters OUR-CVFH signature determination and DB search
 //                 For each found cluster:
-//                 NS.4.1. Voxel grid filter application
-//                 NS.4.2. Normals computation
-//                 NS.4.3. OUR-CVFH signature estimation
-//                         NS.4.3.1. OUR-CVFH signature transformation
-//                 NS.4.4. DB search
+//                 NS.4.1. MLS filter application and normals estimation
+//                 NS.4.2. OUR-CVFH signature estimation
+//                         NS.4.2.1. OUR-CVFH signature transformation
+//                 NS.4.3. DB search
 //                         If a new model is detected and the user chooses to save it
-//                         NS.4.4.1. OUR-CVFH histogram conversion to Flann format
-//                         NS.4.4.2. OUR-CVFH histogram path add
-//                         NS.4.4.3. Kd-Tree index build and storage
+//                         NS.4.3.1. OUR-CVFH histogram conversion to Flann format
+//                         NS.4.3.2. OUR-CVFH histogram path add
+//                         NS.4.3.3. Kd-Tree index build and storage
 //      NS5. Scene storage
 //      NS6. Scene visualization
 // 
@@ -49,11 +47,10 @@
 //      KV4. Dominant plane and clusters extraction
 //           For each found cluster:
 //           KV5. Clusters OUR-CVFH signature estimation and DB search
-//                KV5.1. Voxel grid filter application
-//                KV5.2. Normals computation
-//                KV5.3. OUR-CVFH signature estimation
-//                       KV5.3.1. OUR-CVFH signature transformation
-//                KV5.4. DB search
+//                KV5.1. MLS filter application and normals estimation
+//                KV5.2. OUR-CVFH signature estimation
+//                       KV5.2.1. OUR-CVFH signature transformation
+//                KV5.3. DB search
 
 #include <pcl/console/parse.h>
 #include "MainLoop.h"

@@ -48,7 +48,7 @@ public:
 	// Set the normals cloud
 	void SetNormals(pcl::PointCloud<pcl::Normal> normals_to_set);
 	// Set the point cloud with normals
-	void SetCloudWithNormals();
+	void SetCloudWithNormals(pcl::PointCloud<pcl::PointNormal> cloud_to_set);
 	// Set the OUR-CVFH signature
 	void SetOURCVFH(pcl::PointCloud<pcl::VFHSignature308> histogram_to_set);
 	// Set the OUR-CVFH vector

@@ -36,20 +36,20 @@ OURCVFHEstimation::CloudOURCVFHComputation(Cloud *input_cloud)
 	// VFH estimator object 
 	pcl::OURCVFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::VFHSignature308> ourcvfh;
 	// Kd-Tree object
-	pcl::search::KdTree<pcl::PointXYZ>::Ptr vfh_tree (new pcl::search::KdTree<pcl::PointXYZ> ());
+	pcl::search::KdTree<pcl::PointXYZ>::Ptr ourcvfh_tree (new pcl::search::KdTree<pcl::PointXYZ> ());
 
 	// Initialization of VFH estimator object
 	ourcvfh.setInputCloud (point_cloud_ptr);
 	ourcvfh.setInputNormals (cloud_normals_ptr);
-	ourcvfh.setSearchMethod (vfh_tree);
+	ourcvfh.setSearchMethod (ourcvfh_tree);
 
 	ourcvfh.setCurvatureThreshold (0.785); 		// 45° - maximum curvature between normals not to be considered edges
-	ourcvfh.setClusterTolerance (0.1);			// 5 cm - maximum Euclidean distance between points to be considered part of the same cluster
-	ourcvfh.setEPSAngleThreshold (0.53);		// 25° - maximum angular deviation between normals to be consdiered part of the same cluster
-	ourcvfh.setMinPoints (30);					// minimum number of points of a cluster to be considered valid
+	ourcvfh.setClusterTolerance (0.3);			// 5 cm - maximum Euclidean distance between points to be considered part of the same cluster
+	ourcvfh.setEPSAngleThreshold (0.5);		// 25° - maximum angular deviation between normals to be consdiered part of the same cluster
+	ourcvfh.setMinPoints (50);					// minimum number of points of a cluster to be considered valid
 	
 	ourcvfh.setNormalizeBins (false);
-	ourcvfh.setAxisRatio (0.95);				// maximum ratio between SGURF axis to avoid ambiguity
+	ourcvfh.setAxisRatio (0.9);				// maximum ratio between SGURF axis to avoid ambiguity
 
 	// OUR-CVFH descriptors determination
 	ourcvfh.compute (OURCVFH_histogram);

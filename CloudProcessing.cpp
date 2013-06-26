@@ -26,6 +26,7 @@
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
+#include <pcl/surface/mls.h>
 
 #include "Cloud.h"
 #include "CloudProcessing.h"
@@ -68,28 +69,56 @@ CloudProcessing::PassThroughFilter(Cloud input_cloud)
 
 // VOXEL GRID FILTER ************************************************************************************************************************************************
 void 
-CloudProcessing::VoxelGridFilter(Cloud *input_cloud)
+CloudProcessing::MLSFilterAndNormalsComputation(Cloud *input_cloud)
 {
 	// The function deals with the application of a Voxel Grid Filter with leaf size of 3 mm (the best resolution that Kinct sensor offers)
 
-	// Cloud pointer
+	// Point cloud pointer
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr (new pcl::PointCloud<pcl::PointXYZ>);
 	cloud_ptr = input_cloud->GetCloud();
-	// Voxel Grid filter object
-	pcl::VoxelGrid<pcl::PointXYZ> VGfilter;
+	// Normals cloud pointer
+	pcl::PointCloud<pcl::Normal>::Ptr normals_ptr (new pcl::PointCloud<pcl::Normal>);
+	// PointNormal cloud
+	pcl::PointCloud<pcl::PointNormal> filtered_cloud;
+
+  	// Instantiation of the MLS object 
+	pcl::MovingLeastSquares<pcl::PointXYZ, pcl::PointNormal> MLSFilter;
+	 // KD-Tree
+  	pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
 
 	// Filter object initialization
-  	VGfilter.setInputCloud (cloud_ptr);
-  	// VGfilter.setLeafSize (0.003f, 0.003f, 0.003f);
-  	VGfilter.setLeafSize (0.01f, 0.01f, 0.01f);
+    MLSFilter.setInputCloud (cloud_ptr);
+    MLSFilter.setComputeNormals(true);
+    MLSFilter.setPolynomialFit(true);
+    MLSFilter.setSearchMethod(tree);
+    MLSFilter.setSearchRadius(0.03);
+	MLSFilter.setUpsamplingMethod (pcl::MovingLeastSquares<pcl::PointXYZ, pcl::PointNormal>::VOXEL_GRID_DILATION);
+ 	MLSFilter.setDilationIterations (2);
+	MLSFilter.setDilationVoxelSize (0.005f);
 
-  	// Filter application
-  	VGfilter.filter (*cloud_ptr);
-  	input_cloud->SetCloud(*cloud_ptr);
+	// Filter application
+  	MLSFilter.process(filtered_cloud);
+
+  	// Storage of results in the <Cloud> class in input 
+  	cloud_ptr->points.resize(filtered_cloud.points.size());
+  	normals_ptr->points.resize(filtered_cloud.points.size());
+
+	for (size_t i = 0; i < filtered_cloud.points.size(); i++) 
+	{
+		// Copying PointXYZ data
+    	filtered_cloud.points[i].x = cloud_ptr->points[i].x;
+    	filtered_cloud.points[i].y = cloud_ptr->points[i].y;
+    	filtered_cloud.points[i].z = cloud_ptr->points[i].z;
+    	// Copying of Normal data
+    	filtered_cloud.points[i].normal_x = normals_ptr->points[i].normal_x;
+    	filtered_cloud.points[i].normal_y = normals_ptr->points[i].normal_y;
+    	filtered_cloud.points[i].normal_z = normals_ptr->points[i].normal_z;
+    }
+
+    input_cloud->SetCloud(*cloud_ptr);
+    input_cloud->SetNormals(*normals_ptr);
+    input_cloud->SetCloudWithNormals(filtered_cloud);
 }
-
-// MLS UPSAMPLING FILTER ********************************************************************************************************************************************
-
 
 // ##################################################################################################################################################################
 // POINT CLOUD PROCESSING ###########################################################################################################################################
@@ -231,33 +260,6 @@ CloudProcessing::ExtractClustersFromCloud(Cloud input_cloud)
   		found_clusters.push_back(no_cluster);
   		return(found_clusters);
 	}
-}
-
-// NORMALS ESTIMATION ***********************************************************************************************************************************************
-void 
-CloudProcessing::CloudNormalsComputation (Cloud *input_cloud)
-{
-	// Normals object
-	pcl::PointCloud<pcl::Normal> normals_obj;
-	// Normal Estimation object
-	pcl::NormalEstimationOMP<pcl::PointXYZ, pcl::Normal> ne;
-	// KdTree object
-	pcl::search::KdTree<pcl::PointXYZ>::Ptr normal_tree (new pcl::search::KdTree<pcl::PointXYZ> ());
-	// Pointcloud pointer
-	pcl::PointCloud<pcl::PointXYZ>::Ptr point_cloud_ptr (new pcl::PointCloud<pcl::PointXYZ>);
-	point_cloud_ptr = input_cloud->GetCloud();
-	
-	// Normals Estimator initialization
-	ne.setInputCloud (point_cloud_ptr);
-	ne.setSearchMethod (normal_tree);
-	ne.setRadiusSearch (0.03);
-
-	// Normals computation	
-	ne.compute (normals_obj);
-	input_cloud->SetNormals(normals_obj);
-
-	// Final cloud concatenation
-	input_cloud->SetCloudWithNormals();
 }
 
 

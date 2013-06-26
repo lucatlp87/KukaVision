@@ -15,12 +15,10 @@ public:
 	// Pass-through filter
 	void PassThroughFilter(Cloud input_cloud);
 	// Voxel grid filter
-	void VoxelGridFilter(Cloud *input_cloud);
+	void MLSFilterAndNormalsComputation(Cloud *input_cloud);
 	// 
 
 	// CLOUD PROCESSING *********************************************************************************************************************************************
 	// 	Clusters extraction
 	std::vector<Cloud, Eigen::aligned_allocator<Cloud> > ExtractClustersFromCloud (Cloud input_cloud);
-	// Normals computation
-	void CloudNormalsComputation (Cloud *input_cloud);
 };

@@ -120,11 +120,13 @@ Cloud::SetNormals(pcl::PointCloud<pcl::Normal> normals_to_set)
 
 // SET THE POINT CLOUD WITH NORMALS ********************************************************************************************************************************
 void 
-Cloud::SetCloudWithNormals()
+Cloud::SetCloudWithNormals(pcl::PointCloud<pcl::PointNormal> cloud_to_set)
 {
 	// The function sets the <point_cloud_with_normals> concatenating variables <point_cloud> and <point_cloud_normals>
 
-	pcl::concatenateFields(point_cloud,point_cloud_normals,point_cloud_with_normals);
+	// pcl::concatenateFields(point_cloud,point_cloud_normals,point_cloud_with_normals);
+	// point_cloud_with_normals.points.resize(cloud_to_set.points.size());
+	point_cloud_with_normals = cloud_to_set;
 }
 
 // SETTING THE OUR-CVFH SIGNATURE **********************************************************************************************************************************

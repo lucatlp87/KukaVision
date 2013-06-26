@@ -1,9 +1,0 @@
-1
-
-../ObjectDB/milk/
-2
-detergent
-../ObjectDB/detergent/
-3
-detergent
-../ObjectDB/detergent/

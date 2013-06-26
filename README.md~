@@ -21,7 +21,7 @@ The main goal of this project is to keep an acquired scene from Kinect as much c
 
 The whole project is divided into three main steps.
 
-1. TRAINING STAGE
+- TRAINING STAGE
 
 The training stage deals with the creation of the DB of objects models. 
 
@@ -34,7 +34,7 @@ In each folder of the DB the follwoing items are stored:
 		- a .index file corresponding to the Kd-Tree of the folder
 		- a .list file containing paths to all .pcd files corresponding to OUR-CVFH signatures in the folder
 
-2. NEWSCENE STAGE
+- NEWSCENE STAGE
 
 The second step deals with the definition and the storage of a reference scene. 
 
@@ -45,7 +45,7 @@ When all clusters are recognized (or ignored) the scene is saved in the DB dedic
 		- a .txt file containing infos about objects part of the scene (in particular each object has an ID, a type and the 			  path to the corresponding folder in the objects models DB)
 At last, a visualizer will open showing the whole scene and each recognized object with some information (type and reference pose)
 
-3. KUKAVISION STAGE
+- KUKAVISION STAGE
 
 The last stage deals with a modified scene (that has to be modified in order to become as much close as possible to the reference one). The procedure is exactly the same of the previous step until the DB search section. In addition to this, the very first action allows the user to choose a reference scene from the DB.
 Once all clusters are extracted and OUR-CVFH signatures are estimated a different DB search is implemented. In particular, for each cluster, the algorithm searches a correspondence only in the objects models subfolders saved in the .txt file of the chosen reference scene. If the the correspondence is found a transformation matrix between the current pose and the reference one is estimated. If not the object has to be thrown away, so a the transformation matrix is estimated in a different way. 

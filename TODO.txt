@@ -1,0 +1,17 @@
+TODO
+
+---> class KinectAcquisiton
+- add a calibration routine for the Kinect
+
+---> class CloudProcessing
+- set the pass-through filter
+
+--> class OURCVFHEstimation <---
+- add a function that plots histograms
+
+--> class NewSceneStage <--- <--- <---
+- define how to manage multiple histograms
+- check why when a new object is inserted the kd-tree search fails
+
+--> class KukaVisionStage <--- <---
+- define the class

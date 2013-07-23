@@ -16,10 +16,13 @@ include_directories(${HDF5_INCLUDE_DIR})
 
 add_executable (KukaVision 	main.cpp 
 							TrainingStage.cpp
+							NewSceneStage.cpp
 							KinectAcquisition.cpp
 							CloudProcessing.cpp
 							OURCVFHEstimation.cpp
-							DBManagement.cpp)
+							DBManagement.cpp
+							SceneManagement.cpp
+							Object.cpp)
 				
 target_link_libraries (KukaVision ${PCL_LIBRARIES} ${FLANN_LIBRARIES} ${HDF5_hdf5_LIBRARY})
 

@@ -56,6 +56,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include "TrainingStage.h"
+#include "NewSceneStage.h"
 
 void
 PrintUsage(const char* progName)
@@ -134,6 +135,11 @@ main(int argc, char** argv)
           // Print an error message due to a wrong input
           pcl::console::print_error ("\n\t\t[COMMAND ERROR] Please insert <y> or <n>\n");
       }
+  }
+  else if (new_ref_scene_)
+  {
+    NewSceneStage newscene;
+    newscene.RunStage();
   }
   return(0);
 }

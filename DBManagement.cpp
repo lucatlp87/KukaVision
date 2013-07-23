@@ -173,7 +173,6 @@ DBManagement::BuildOURCVFHTreeIndex(std::string input_folder)
 	   	index.buildIndex ();
 	   	// Index storage
 		index.save (actual_tree_path);
-		   	// delete[] vfh_signatures_flann.ptr ();
 	}
 }
 
@@ -184,7 +183,7 @@ DBManagement::BuildOURCVFHTreeIndex(std::string input_folder)
 // SEARCHING OUR-CVFH CORRESPONDENCES
 
 bool
-DBManagement::SearchTheDB()
+DBManagement::SearchTheDB(std::vector<float> input_signature)
 {
 	// UPDATING THE SEARCH FOLDER
 
@@ -206,10 +205,8 @@ DBManagement::SearchTheDB()
 	// INITIALIZATION **********************************************************************************************************************************************
 	// Return variable
 	bool found = 0;
-
 	// Number of acceptable correspondences
 	int k = 1;
-
 	// Vector containing OUR-CVFH model pairs
 	std::vector<model_pair> model_vector;
 	// Flann matrix containing
@@ -218,7 +215,7 @@ DBManagement::SearchTheDB()
   	flann::Matrix<float> k_distances (new float[k], 1, k);
   	// Flann matrix containing OUR-CVFH histograms data
   	flann::Matrix<float> histogram_data;
-
+	
   	// Loading histograms data (Flann format) in the Flann matrix
     flann::load_from_file (histogram_data, actual_flann_path, "training_data");
 	
@@ -247,23 +244,20 @@ DBManagement::SearchTheDB()
     // The last section deals with the search algorithm 
 
   	flann::Matrix<float> p = flann::Matrix<float>(new float[308], 1, 308);
-  	std::vector<float> input_signature;
-  	input_signature.resize(308);
-  	// input_signature = input_cloud.GetOURCVFHVector();
-
+  
   	memcpy (&p.ptr ()[0], &input_signature[0], p.cols * p.rows * sizeof (float));
 
   	index.knnSearch (p, k_indices, k_distances, k, flann::SearchParams (512));
   	delete[] p.ptr ();
 
 	if (k_distances[0][0] > 5)
-  		std::cout << "No correspondences found" << std::endl;
+  		std::cout << "\tNo correspondences found" << std::endl;
   	else
   	{
   		// Output the results on screen
-		pcl::console::print_error("Correspondence found:\n");
-		std::cout << "\t\t\t\t\tfile -> " << model_vector.at (k_indices[0][0]).first.c_str () << std::endl
-				  << "\t\t\t\t\twith distance equal to " << k_distances[0][0] << std::endl;
+		pcl::console::print_error("\n\t\t\tCorrespondence found:\n");
+		std::cout << "\t\t\t\tfile -> " << model_vector.at (k_indices[0][0]).first.c_str () << std::endl
+				  << "\t\t\t\twith distance equal to " << k_distances[0][0] << std::endl;
 		found = 1;
 	}
 	return (found);

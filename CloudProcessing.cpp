@@ -160,6 +160,7 @@ CloudProcessing::SaveCloud(pcl::PointCloud<pcl::PointNormal>::Ptr cluster_with_n
   {
     std::cout << "\t\tSaving OUR-CVFH descriptors cloud   " << std::endl;
     path_ourcvfh << cloud_dir << cloud_name << "_ourcvfh.pcd";
+
     pcl::io::savePCDFile(path_ourcvfh.str(),*OURCVFH_signature,false);
   }
 

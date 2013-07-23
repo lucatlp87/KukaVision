@@ -9,6 +9,8 @@
 
 #include <Eigen/StdVector>
 
+#include <flann/flann.hpp>
+
 #include <pcl/common/common.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
@@ -226,6 +228,8 @@ TrainingStage::RunStage()
         pcl::PointCloud<pcl::PointNormal>::Ptr current_cluster_normals;
         // Current OUR-CVFH signature pointer
         pcl::PointCloud<pcl::VFHSignature308>::Ptr current_signature;
+        // Current pose matrix
+        Eigen::Matrix<float, 4, 4> current_transformation;
         // First storage flag
         bool first_storage = 1;
 
@@ -242,7 +246,7 @@ TrainingStage::RunStage()
 			current_cluster_normals.reset(new pcl::PointCloud<pcl::PointNormal>);
 			// Resetting the current signature pointer
 			current_signature.reset(new pcl::PointCloud<pcl::VFHSignature308>);
-
+    
             // Loading of cluster informations and data from the original (segmented) cloud
             for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); pit++)
 	            current_cluster->points.push_back (no_plane_cloud->points[*pit]); 
@@ -315,14 +319,15 @@ TrainingStage::RunStage()
 	            std::cout << "\t\t(" << current_cluster->points.size() << " data points)" << std::endl
 	                      << "\t\t<(execution time: " << tt.toc() << " ms)>" << std::endl;
 
-	            // STEP T4.2. OUR-CVFH SIGNATURE ESTIMATION ********************************************************************************************************
+	            
+                // STEP T4.2. OUR-CVFH SIGNATURE ESTIMATION ********************************************************************************************************
        			// ***************************************************************************************************************************************************
 	            tt.tic();
 	            pcl::console::print_error ("\n\t\tSTEP T4.2. OUR-CVFH signature estimation...");
 	            // OUR-CVFH estimation class 
 	            OURCVFHEstimation ourcvfh_object;
 
-	            ourcvfh_object.CloudOURCVFHComputation(current_cluster,current_normals,current_signature);
+	            current_transformation = ourcvfh_object.CloudOURCVFHComputation(current_cluster,current_normals,current_signature);
 
 	            pcl::console::print_error ("\tdone\n");
 	            std::cout << "\t\t<(execution time: " << tt.toc() << " ms)>" << std::endl;

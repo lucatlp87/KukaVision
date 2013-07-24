@@ -9,9 +9,12 @@ TODO
 --> class OURCVFHEstimation <---
 - add a function that plots histograms
 
---> class NewSceneStage <--- <--- <---
+--> class NewSceneStage <--- <---
 - define how to manage multiple histograms
 - check why when a new object is inserted the kd-tree search fails
 
---> class KukaVisionStage <--- <---
-- define the class
+--> class KukaVisionStage <--- <---<---
+- add a visualizer at last
+- [ATTENTION] The search of model correspondences is done only for folders corresponding to object of reference scene. If there is an object that has to thrown away we don't know what kind of object it is (and we don't know the corresponding model in the DB, if it exists). It should be interesting to search the model type for outer objects too in order to know how to grasp them!!!
+
+ADD ROUTINES IN ORDER TO ERASE A SCENE OR A MODEL FROM DB!!!

@@ -39,6 +39,8 @@ public:
 	// SCENE I/O ****************************************************************************************************************************************************
 	// Get <ref_scene> attribute
 	pcl::PointCloud<pcl::PointXYZ>::Ptr GetRefScene();
+	// Get <actual_scene> attribute
+	pcl::PointCloud<pcl::PointXYZ>::Ptr GetActualScene();
 	// Get object model subfolder list
 	std::vector<ref_pair> GetModelSubfolderList();
 	// Get <in_objects_list> attribute
@@ -46,23 +48,31 @@ public:
 	// Get <out_objects_vector> attribute
 	std::vector<Object, Eigen::aligned_allocator<Object> > GetOutObjectsVector();
 	
-	// Set <ref_scene> atrribute
+	// Set <ref_scene> attribute
 	void SetRefScene(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_to_set);
+	// Set <actual_scene> attribute
+	void SetActualScene(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_to_set);
 	// Insert a <Object> in the vector <object_list>
 	void InsertObject(Object object_to_insert);
 	// Update the object
 	void UpdateObject(std::string scene_name);
 	// Update the inner objects vector
-	void UpdateInnerObjectsVector(int index_to_search);
+	void UpdateInnerObjectsVector(int index_to_search, Eigen::Matrix<float, 4, 4> pose, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_to_set);
 	// Update the outer objects vector
-	// void UpdateOuterObjectsVector(Cloud object_to_insert, int obj_idx);
+	void UpdateOuterObjectsVector(int index_to_search, Eigen::Matrix<float, 4, 4> pose, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_to_set);
 
+	// List SceneDB items
+	void ListDBItems();
 	// Save a new scene
 	void SaveScene();
 	// Load a scene from DB
-	void LoadRefScene(std::string scene_to_upload);
+	bool LoadRefScene(std::string scene_to_upload);
 
 	// VISUALIZATION ************************************************************************************************************************************************
+	// Printing inner and outer objects infos
+	void ShowInfo();
 	// Visualize the reference scene
-	void VisualizeRefScene(std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> cluster_vector);
+	void VisualizeRefScene();
+	// Visualize reference scene and actual scene
+	void VisualizeActualScene();
 };

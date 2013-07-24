@@ -52,11 +52,11 @@ CloudProcessing::PassThroughFilter(pcl::PointCloud<pcl::PointXYZ>::Ptr input_clo
 	  // Filter object initialization
 	  PTfilter.setInputCloud (input_cloud);
 	  PTfilter.setFilterFieldName ("x");
-  	PTfilter.setFilterLimits (0.0, 1.0);
+  	PTfilter.setFilterLimits (-1.5, 1.5);
   	PTfilter.setFilterFieldName ("y");
-  	PTfilter.setFilterLimits (0.0, 1.0);
+  	PTfilter.setFilterLimits (-1.5, 1.5);
   	PTfilter.setFilterFieldName ("z");
-  	PTfilter.setFilterLimits (0.0, 1.0);
+  	PTfilter.setFilterLimits (0.1, 1.12);
 
   	// Filter application
   	PTfilter.filter (*input_cloud);
@@ -107,7 +107,32 @@ CloudProcessing::MLSFilterAndNormalsComputation(pcl::PointCloud<pcl::PointXYZ>::
 // ##################################################################################################################################################################
 // POINT CLOUD STORAGE ##############################################################################################################################################
 // ##################################################################################################################################################################
-// SAVING THE CLOUD
+
+// LISTING DB ITEMS ************************************************************************************************************************************************
+void
+CloudProcessing::ListDBItems()
+{
+  // Path to the DB directory
+  boost::filesystem::path ObjectDB_path = "../ObjectDB";
+  // Iterator
+  int folder_number = 0;
+
+  for (boost::filesystem::directory_iterator it (ObjectDB_path); it != boost::filesystem::directory_iterator (); ++it)
+    {
+        if (boost::filesystem::is_directory (it->status ()))
+        {
+          std::stringstream folder_name;
+            folder_name << it->path ().c_str();
+            std::cout << "\t\t\t" << folder_name.str().substr(folder_name.str().find_last_of("/")+1) << std::endl;
+            ++folder_number;
+        }
+    }
+
+    if (folder_number == 0)
+      std::cout << "\t\t\tNo models are stored in the DB!" << std::endl;
+}
+
+// SAVING THE CLOUD ************************************************************************************************************************************************
 std::string
 CloudProcessing::SaveCloud(pcl::PointCloud<pcl::PointNormal>::Ptr cluster_with_normals, pcl::PointCloud<pcl::VFHSignature308>::Ptr OURCVFH_signature)
 {
@@ -127,8 +152,13 @@ CloudProcessing::SaveCloud(pcl::PointCloud<pcl::PointNormal>::Ptr cluster_with_n
   std::stringstream path;
   std::stringstream path_ourcvfh;
 
+  // Listing available models
+  std::cout << "\t\tAvailable models are:" << std::endl << std::endl;
+  this->ListDBItems();
+  std::cout << std::endl << "\t\t(if this is a new model, please insert a new folder: it will be automatically created in the DB)" << std::endl;
+
   // DB subfolder interactive choice
-  std::cout << "\t\tPlease insert the name of the subfolder in the DB: ";
+  std::cout << "\n\t\tPlease insert the name of the subfolder in the DB: ";
   std::cin >> subfolder_name;
   subfolder_name.append("/");
   cloud_dir.append(subfolder_name);

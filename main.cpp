@@ -51,12 +51,20 @@
 //                KV5.2. OUR-CVFH signature estimation
 //                       KV5.2.1. OUR-CVFH signature transformation
 //                KV5.3. DB search
+//      KV6. Infos display
+//           KV6.1. Inner and outer objects infos screen print
+//           KV6.2. Inner and outer objects visualization in the actual scene
+// 
+//    MAINTENANCE STAGE
+//    In this stage the user can delete a reference scene or an object model stored in the one of the two DBs
 
 #include <iostream>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include "TrainingStage.h"
 #include "NewSceneStage.h"
+#include "KukaVisionStage.h"
+#include "MaintenanceStage.h"
 
 void
 PrintUsage(const char* progName)
@@ -65,18 +73,22 @@ PrintUsage(const char* progName)
             << "Options:" << std::endl
               << "-------------------------------------------" << std::endl
               << "-h            THIS HELP" << std::endl
-              << "-training     TRAINING STAGE" << std::endl
+              << "-t            TRAINING STAGE" << std::endl
               << "              Object model creation (Kinect acquisition of the cluster, VFH descriptor determination" << std::endl
               << "              and KdTree update)" << std::endl
-              << "-newscene     NEW SCENE REGISTRATION STAGE" << std::endl
+              << "-n            NEW SCENE REGISTRATION STAGE" << std::endl
               << "              New reference scene acquisition" << std::endl
+              << "-k            KUKAVISION STAGE" << std::endl
+              << "              Actual scene acquisition and objects pose transformations determination" << std::endl
+              << "-m            MAINTENANCE STAGE" << std::endl
+              << "              Delete a reference scene or an object model from DB"
               << std::endl;
 };
 
 int 
 main(int argc, char** argv)
 {
-  bool training_(false), new_ref_scene_(false), kuka_vision_(false);
+  bool training_(false), new_ref_scene_(false), kuka_vision_(false), maintenance_(false);
 
   // PARSING THE COMMAND LINE
 	if (pcl::console::find_argument (argc, argv, "-h") >= 0)
@@ -84,12 +96,14 @@ main(int argc, char** argv)
  		PrintUsage (argv[0]);
     return 0;
   }
-  else if (pcl::console::find_argument (argc, argv, "-training") >= 0)
+  else if (pcl::console::find_argument (argc, argv, "-t") >= 0)
     training_ = true;
-  else if (pcl::console::find_argument (argc, argv, "-newscene") >= 0)
+  else if (pcl::console::find_argument (argc, argv, "-n") >= 0)
     new_ref_scene_ = true;
-  else if (pcl::console::find_argument (argc, argv, "-kukavision") >= 0)
+  else if (pcl::console::find_argument (argc, argv, "-k") >= 0)
     kuka_vision_ = true;
+  else if (pcl::console::find_argument (argc, argv, "-m") >= 0)
+    maintenance_ = true;
   else
   {
    	PrintUsage (argv[0]);
@@ -139,7 +153,121 @@ main(int argc, char** argv)
   else if (new_ref_scene_)
   {
     NewSceneStage newscene;
-    newscene.RunStage();
+    // New acquisition user choice
+    std::string insert_object;
+    bool first_time = 1;
+    
+    while(true)
+    {
+      // USER CHOICE PARSING ***************************************************************************************************************************************
+      // In order to have the chance to do multiple acquisition (different reference scenes) a <while> loop is performed and the user is asked to choose
+      // between doing a new acquisition or exiting the function. In add, the flag <first_time> allows to separate the first access to the function (the first 
+      // acquisition) that is enabled by default. After the first acquisition the user is asked to choose between exit the function or acquire another cloud.
+      // The available options for the user to insert are:
+      //  - <y> to acquire a new image (default for the first access)
+      //  - <n> to exit the function
+      //  If the user inserts a wrong letter an error message will be shown and the user will be asked to insert a new choice
+
+      if (!first_time)
+      {
+          std::cout << std::endl << "Do you want to repeat the acquisition for a new reference scene? " << std::flush;
+          std::cin >> insert_object;
+      }
+      else 
+      {
+          insert_object = "y";
+          first_time = 0;
+      }  
+
+      // NEW ACQUISITION *****************************************************************************************************************************************
+      if (insert_object.compare ("y") == 0)
+          newscene.RunStage();
+      else if (insert_object.compare("n") == 0)
+          break;        
+      else
+          // Print an error message due to a wrong input
+          pcl::console::print_error ("\n\t\t[COMMAND ERROR] Please insert <y> or <n>\n");
+      }
   }
+  else if (kuka_vision_)
+  {
+    KukaVisionStage kukavision;
+        // New acquisition user choice
+    std::string insert_object;
+    bool first_time = 1;
+    
+    while(true)
+    {
+      // USER CHOICE PARSING ***************************************************************************************************************************************
+      // In order to have the chance to do multiple acquisition (different actual scenes) a <while> loop is performed and the user is asked to choose
+      // between doing a new acquisition or exiting the function. In add, the flag <first_time> allows to separate the first access to the function (the first 
+      // acquisition) that is enabled by default. After the first acquisition the user is asked to choose between exit the function or acquire another cloud.
+      // The available options for the user to insert are:
+      //  - <y> to acquire a new image (default for the first access)
+      //  - <n> to exit the function
+      //  If the user inserts a wrong letter an error message will be shown and the user will be asked to insert a new choice
+
+      if (!first_time)
+      {
+          std::cout << std::endl << "Do you want to repeat the acquisition for a new reference scene? " << std::flush;
+          std::cin >> insert_object;
+      }
+      else 
+      {
+          insert_object = "y";
+          first_time = 0;
+      }  
+
+      // NEW ACQUISITION *****************************************************************************************************************************************
+      if (insert_object.compare ("y") == 0)
+          kukavision.RunStage();
+      else if (insert_object.compare("n") == 0)
+          break;        
+      else
+          // Print an error message due to a wrong input
+          pcl::console::print_error ("\n\t\t[COMMAND ERROR] Please insert <y> or <n>\n");
+      }
+  }
+  else if (maintenance_)
+  {
+    MaintenanceStage maintenance;
+        // New acquisition user choice
+    std::string insert_object;
+    bool first_time = 1;
+    
+    while(true)
+    {
+      // USER CHOICE PARSING ***************************************************************************************************************************************
+      // In order to have the chance to do multiple acquisition (different actual scenes) a <while> loop is performed and the user is asked to choose
+      // between doing a new acquisition or exiting the function. In add, the flag <first_time> allows to separate the first access to the function (the first 
+      // acquisition) that is enabled by default. After the first acquisition the user is asked to choose between exit the function or acquire another cloud.
+      // The available options for the user to insert are:
+      //  - <y> to acquire a new image (default for the first access)
+      //  - <n> to exit the function
+      //  If the user inserts a wrong letter an error message will be shown and the user will be asked to insert a new choice
+
+      if (!first_time)
+      {
+          std::cout << std::endl << "Do you want to delete anything else? " << std::flush;
+          std::cin >> insert_object;
+      }
+      else 
+      {
+          insert_object = "y";
+          first_time = 0;
+      }  
+
+      // NEW ACQUISITION *****************************************************************************************************************************************
+      if (insert_object.compare ("y") == 0)
+          maintenance.RunStage();
+      else if (insert_object.compare("n") == 0)
+          break;        
+      else
+          // Print an error message due to a wrong input
+          pcl::console::print_error ("\n\t\t[COMMAND ERROR] Please insert <y> or <n>\n");
+      }
+    
+  }
+
   return(0);
 }

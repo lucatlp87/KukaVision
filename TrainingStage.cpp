@@ -78,8 +78,8 @@ TrainingStage::RunStage()
 	pcl::console::print_error ("****************************************************************\n");
 	       
 	// Acquiring the cloud from Kinect sensor
-	// acquisition_object.AcquireCloudKinect(kinect_acquisition);
-	pcl::io::loadPCDFile("scene.pcd",*kinect_acquisition);
+	acquisition_object.AcquireCloudKinect(kinect_acquisition);
+	//pcl::io::loadPCDFile("scene.pcd",*kinect_acquisition);
 
     std::cout << std::endl <<  "---> POINT CLOUD ACQUISITION FROM KINECT total execution time: " << tt.toc() << " ms" << std::endl << std::endl;
 
@@ -92,7 +92,7 @@ TrainingStage::RunStage()
     pcl::console::print_error ("******************************************************************\n");
 
     // Filter application (the filter parameters are fitted on the used tabletop)
-    // processing_object.PassThroughFilter(kinect_acquisition);
+    processing_object.PassThroughFilter(kinect_acquisition);
 
     std::cout << std::endl << "---> PASS-THROUGH FILTER APPLICATION total execution time: " << tt.toc() << " ms" << std::endl << std::endl;
 			
@@ -209,7 +209,9 @@ TrainingStage::RunStage()
     pcl::console::print_error ("\tdone\n");
     std::cout << "\t" <<  number_of_clusters << " clusters found" << std::endl
               << "\t<(execution time: " << euclidean_tt.toc() << " ms)>" << std::endl;     
-	        
+	
+    std::cout << std::endl << "---> DOMINANT PLANE AND CLUSTER EXTRACTION total execution time: " << tt.toc() << " ms" << std::endl << std::endl;
+    
     if (number_of_clusters > 0)
     {
        	// STEP T4. CLUSTER VISUALIZATION AND STORAGE ********************************************************************************************************

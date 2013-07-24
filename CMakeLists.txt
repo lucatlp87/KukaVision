@@ -17,6 +17,8 @@ include_directories(${HDF5_INCLUDE_DIR})
 add_executable (KukaVision 	main.cpp 
 							TrainingStage.cpp
 							NewSceneStage.cpp
+							KukaVisionStage.cpp
+							MaintenanceStage.cpp
 							KinectAcquisition.cpp
 							CloudProcessing.cpp
 							OURCVFHEstimation.cpp

@@ -128,8 +128,6 @@ NewSceneStage::RunStage()
     pcl::EuclideanClusterExtraction<pcl::PointXYZ> cluster_exctraction;
     // Cluster indices vector
     std::vector<pcl::PointIndices> clusters_indices_vector;
-    // Vector containing point clouds corresponding to objects cluster
-    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr > clusters_cloud_vector;
     // Vector containing updated folders
     std::vector<std::string> updated_folders (1,"NO_CLUSTER_SAVED");
 
@@ -214,7 +212,8 @@ NewSceneStage::RunStage()
     pcl::console::print_error ("\tdone\n");
     std::cout << "\t" <<  number_of_clusters << " clusters found" << std::endl
               << "\t<(execution time: " << euclidean_tt.toc() << " ms)>" << std::endl;
-    clusters_cloud_vector.resize(number_of_clusters);
+
+    std::cout << std::endl << "---> DOMINANT PLANE AND CLUSTER EXTRACTION total execution time: " << tt.toc() << " ms" << std::endl << std::endl;
 
     if (number_of_clusters > 0)
     {
@@ -237,7 +236,7 @@ NewSceneStage::RunStage()
         std::vector<float> current_signature_vector;
         current_signature_vector.resize(308);
         // Current transformation matrix
-        Eigen::Matrix<float, 4, 4> current_transformation;
+        Eigen::Matrix<float, 4, 4> current_pose;
         // Temporary <Object> instantiation
       	Object current_object;
         // Path of the subfolder
@@ -300,7 +299,7 @@ NewSceneStage::RunStage()
 	          tt.tic();
 	          pcl::console::print_error ("\n\t\tSTEP NS4.2. OUR-CVFH signature estimation...");
 	        
-	          current_transformation = ourcvfh_object.CloudOURCVFHComputation(current_cluster,current_normals,current_signature);
+	          current_pose = ourcvfh_object.CloudOURCVFHComputation(current_cluster,current_normals,current_signature);
 
 
   	        pcl::console::print_error ("\tdone\n");
@@ -352,10 +351,10 @@ NewSceneStage::RunStage()
                         ++current_obj_id;
                         current_object.SetObjectType(ss.str().substr(ss.str().find_last_of("/")+1));
                         current_object.SetObjectModelPath(search_path);
-                        current_object.SetObjectRefPose(current_transformation);
-                        
+                        current_object.SetObjectRefPose(current_pose);
+                        current_object.SetObjectCloud(current_cluster);
+
                         scene_object.InsertObject(current_object);
-                        clusters_cloud_vector[list_idx-1] = current_cluster;
     
                         corr_found = 1;
                         ++list_idx;
@@ -471,17 +470,16 @@ NewSceneStage::RunStage()
                     current_object.SetObjectModelPath(search_path);
                     search_path.erase(search_path.end()-1);
                     current_object.SetObjectType(search_path.substr(search_path.find_last_of("/")+1));
-                    current_object.SetObjectRefPose(current_transformation);
+                    current_object.SetObjectRefPose(current_pose);
+                    current_object.SetObjectCloud(current_cluster);
 
                     scene_object.InsertObject(current_object);
-                    clusters_cloud_vector[list_idx-1] = current_cluster;
+
                     ++list_idx;
                 } 
                 else
                 {
                     pcl::console::print_error("\n\t[WARNING] The considered cluster will not be part of the reference scene!\n");
-                    // clusters_cloud_vector.erase(clusters_cloud_vector.end());
-                    clusters_cloud_vector.resize(clusters_cloud_vector.size()-1);
                 }
             }
 	      }
@@ -506,5 +504,5 @@ NewSceneStage::RunStage()
     pcl::console::print_error ("STEP NS6. SCENE VISUALIZATION\n");
     pcl::console::print_error ("Please quit the visualization to continue\n\n");
 
-    scene_object.VisualizeRefScene(clusters_cloud_vector);
+    scene_object.VisualizeRefScene();
 }

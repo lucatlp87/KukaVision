@@ -19,6 +19,8 @@ public:
 										pcl::PointCloud<pcl::PointNormal>::Ptr cluster_with_normals);
 
 	// CLOUD STORAGE ************************************************************************************************************************************************
+	// Listing ObjectDB items
+	void ListDBItems();
 	// Saving the cloud model in object models DB
 	std::string SaveCloud(pcl::PointCloud<pcl::PointNormal>::Ptr cluster_with_normals, pcl::PointCloud<pcl::VFHSignature308>::Ptr OURCVFH_signature);
 };

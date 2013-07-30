@@ -28,11 +28,12 @@ The training stage deals with the creation of the DB of objects models.
 All models are extracted from the acquired scene using the Euclidean Clustering algorithm. Before using the algorithm a pass-through filter is implemented in order to extract the dominant plane cluster (corresponding to the tabletop). In order to make the code running well set the acquisition camera position and the pass-through filter parameters so that that the acquired cloud as only one dominant plane cluster.
 Once the cloud is acquired and clusterized, each extracted cluster is upsampled (using a MLS filter) and processed in order to obtain its OUR-CVFH signature. During these steps the user is required to choose if the considered cluster has to be saved or not (a visualizer allows a simple visual recognition of the cluster in the scene). If it the cluster has to be saved the user is asked to insert the name of the folder (in objects models DB) in which the model will be stored, together with the name of the file. For each model the user wants to represent, several acquisition have to be performed. Each acquisition will correspond to a different point of view of the object.
 In each folder of the DB the follwoing items are stored:
-		- a .pcd file corresponding to the cluster of each point of view (in <PointNormal> format)
-		- a .pcd file corresponding to the OUR-CVFH signature of each cluster (in <VFHSignature308> format)
-		- a .h5 file corresponding to a matrix (Flann format) containing OUR-CVFH signatures of all elements of the folder
-		- a .index file corresponding to the Kd-Tree of the folder
-		- a .list file containing paths to all .pcd files corresponding to OUR-CVFH signatures in the folder
+
+	- a .pcd file corresponding to the cluster of each point of view (in <PointNormal> format)
+	- a .pcd file corresponding to the OUR-CVFH signature of each cluster (in <VFHSignature308> format)
+	- a .h5 file corresponding to a matrix (Flann format) containing OUR-CVFH signatures of all elements of the folder
+	- a .index file corresponding to the Kd-Tree of the folder
+	- a .list file containing paths to all .pcd files corresponding to OUR-CVFH signatures in the folder
 
 - NEWSCENE STAGE
 
@@ -43,8 +44,7 @@ Once all clusters are extracted from the acquired cloud, each of them is upsampl
 When all clusters are recognized (or ignored) the scene is saved in the DB dedicated to reference scenes (the user is asked to specify the name of the scene). The DB is composed of folders and each folder corresponds to a scene. In each folder the following items are stored:
 
 	- a .pcd file corresponding to the cloud of the whole scene acquired from Kinect
-
-	- a .txt file containing infos about objects part of the scene (in particular each object has an ID, a type and the 		  path to the corresponding folder in the objects models DB)
+	- a .txt file containing infos about objects part of the scene (in particular each object has an ID, a type and the path to the corresponding folder in the objects models DB)
 
 At last, a visualizer will open showing the whole scene and each recognized object with some information (type and reference pose)
 

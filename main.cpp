@@ -113,160 +113,31 @@ main(int argc, char** argv)
   // Parsing the line
   if(training_)
   {
+    // Class instantiation
     TrainingStage training;
-     // New acquisition user choice
-    std::string insert_object;
-    bool first_time = 1;
-    
-    while(true)
-    {
-      // USER CHOICE PARSING ***************************************************************************************************************************************
-      // In order to have the chance to do multiple acquisition (different point of view of the object) a <while> loop is performed and the user is asked to choose
-      // between doing a new acquisition or exiting the function. In add, the flag <first_time> allows to separate the first access to the function (the first 
-      // acquisition) that is enabled by default. After the first acquisition the user is asked to choose between exit the function or acquire another cloud.
-      // The available options for the user to insert are:
-      //  - <y> to acquire a new image (default for the first access)
-      //  - <n> to exit the function
-      //  If the user inserts a wrong letter an error message will be shown and the user will be asked to insert a new choice
-
-      if (!first_time)
-      {
-          std::cout << std::endl << "Do you want to repeat the acquisition? " << std::flush;
-          std::cin >> insert_object;
-      }
-      else 
-      {
-          insert_object = "y";
-          first_time = 0;
-      }  
-
-      // NEW ACQUISITION *****************************************************************************************************************************************
-      if (insert_object.compare ("y") == 0)
-          training.RunStage();
-      else if (insert_object.compare("n") == 0)
-          break;        
-      else
-          // Print an error message due to a wrong input
-          pcl::console::print_error ("\n\t\t[COMMAND ERROR] Please insert <y> or <n>\n");
-      }
+    // Stage running    
+    training.RunStage();
   }
   else if (new_ref_scene_)
   {
+    // Class instantiation
     NewSceneStage newscene;
-    // New acquisition user choice
-    std::string insert_object;
-    bool first_time = 1;
-    
-    while(true)
-    {
-      // USER CHOICE PARSING ***************************************************************************************************************************************
-      // In order to have the chance to do multiple acquisition (different reference scenes) a <while> loop is performed and the user is asked to choose
-      // between doing a new acquisition or exiting the function. In add, the flag <first_time> allows to separate the first access to the function (the first 
-      // acquisition) that is enabled by default. After the first acquisition the user is asked to choose between exit the function or acquire another cloud.
-      // The available options for the user to insert are:
-      //  - <y> to acquire a new image (default for the first access)
-      //  - <n> to exit the function
-      //  If the user inserts a wrong letter an error message will be shown and the user will be asked to insert a new choice
-
-      if (!first_time)
-      {
-          std::cout << std::endl << "Do you want to repeat the acquisition for a new reference scene? " << std::flush;
-          std::cin >> insert_object;
-      }
-      else 
-      {
-          insert_object = "y";
-          first_time = 0;
-      }  
-
-      // NEW ACQUISITION *****************************************************************************************************************************************
-      if (insert_object.compare ("y") == 0)
-          newscene.RunStage();
-      else if (insert_object.compare("n") == 0)
-          break;        
-      else
-          // Print an error message due to a wrong input
-          pcl::console::print_error ("\n\t\t[COMMAND ERROR] Please insert <y> or <n>\n");
-      }
+    // Stage running
+    newscene.RunStage();
   }
   else if (kuka_vision_)
   {
+    // Class instantiation
     KukaVisionStage kukavision;
-        // New acquisition user choice
-    std::string insert_object;
-    bool first_time = 1;
-    
-    while(true)
-    {
-      // USER CHOICE PARSING ***************************************************************************************************************************************
-      // In order to have the chance to do multiple acquisition (different actual scenes) a <while> loop is performed and the user is asked to choose
-      // between doing a new acquisition or exiting the function. In add, the flag <first_time> allows to separate the first access to the function (the first 
-      // acquisition) that is enabled by default. After the first acquisition the user is asked to choose between exit the function or acquire another cloud.
-      // The available options for the user to insert are:
-      //  - <y> to acquire a new image (default for the first access)
-      //  - <n> to exit the function
-      //  If the user inserts a wrong letter an error message will be shown and the user will be asked to insert a new choice
-
-      if (!first_time)
-      {
-          std::cout << std::endl << "Do you want to repeat the acquisition for a new reference scene? " << std::flush;
-          std::cin >> insert_object;
-      }
-      else 
-      {
-          insert_object = "y";
-          first_time = 0;
-      }  
-
-      // NEW ACQUISITION *****************************************************************************************************************************************
-      if (insert_object.compare ("y") == 0)
-          kukavision.RunStage();
-      else if (insert_object.compare("n") == 0)
-          break;        
-      else
-          // Print an error message due to a wrong input
-          pcl::console::print_error ("\n\t\t[COMMAND ERROR] Please insert <y> or <n>\n");
-      }
+    // Stage running
+    kukavision.RunStage();
   }
   else if (maintenance_)
   {
+    // Class instantiation
     MaintenanceStage maintenance;
-        // New acquisition user choice
-    std::string insert_object;
-    bool first_time = 1;
-    
-    while(true)
-    {
-      // USER CHOICE PARSING ***************************************************************************************************************************************
-      // In order to have the chance to do multiple acquisition (different actual scenes) a <while> loop is performed and the user is asked to choose
-      // between doing a new acquisition or exiting the function. In add, the flag <first_time> allows to separate the first access to the function (the first 
-      // acquisition) that is enabled by default. After the first acquisition the user is asked to choose between exit the function or acquire another cloud.
-      // The available options for the user to insert are:
-      //  - <y> to acquire a new image (default for the first access)
-      //  - <n> to exit the function
-      //  If the user inserts a wrong letter an error message will be shown and the user will be asked to insert a new choice
-
-      if (!first_time)
-      {
-          std::cout << std::endl << "Do you want to delete anything else? " << std::flush;
-          std::cin >> insert_object;
-      }
-      else 
-      {
-          insert_object = "y";
-          first_time = 0;
-      }  
-
-      // NEW ACQUISITION *****************************************************************************************************************************************
-      if (insert_object.compare ("y") == 0)
-          maintenance.RunStage();
-      else if (insert_object.compare("n") == 0)
-          break;        
-      else
-          // Print an error message due to a wrong input
-          pcl::console::print_error ("\n\t\t[COMMAND ERROR] Please insert <y> or <n>\n");
-      }
-    
+    // Stage running
+    maintenance.RunStage();
   }
 
   return(0);

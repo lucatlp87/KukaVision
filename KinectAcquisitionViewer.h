@@ -36,7 +36,7 @@ class KinectAcquisitionViewer
       interface->registerCallback (f);
       interface->start ();
 
-      pcl::console::print_error("   Please, quit the viewer to acquire the cloud\n");
+      pcl::console::print_error("\tPlease, quit the viewer to acquire the cloud\n");
 
       while (!viewer.wasStopped())
       {

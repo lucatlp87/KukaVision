@@ -53,3 +53,15 @@ At last, a visualizer will open showing the whole scene and each recognized obje
 The last stage deals with a modified scene (that has to be modified in order to become as much close as possible to the reference one). The procedure is exactly the same of the previous step until the DB search section. In addition to this, the very first action allows the user to choose a reference scene from the DB.
 Once all clusters are extracted and OUR-CVFH signatures are estimated a different DB search is implemented. In particular, for each cluster, the algorithm searches a correspondence only in the objects models subfolders saved in the .txt file of the chosen reference scene. If the the correspondence is found a transformation matrix between the current pose and the reference one is estimated. If not the object has to be thrown away, so a the transformation matrix is estimated in a different way. 
 When all transformations are defined, the KUKA arm can operate grasping objects and moving them in a proper way.
+
+
+###################################################################
+###################################################################
+The fix for the bug in the OUR-CVFH signature determination consists in adding the follwoing two line
+
+        if (h_index > 12)
+          h_index = 12;
+
+at line 494 (after         int h_index = static_cast<int> (std::floor (size_hists * (d / distance_normalization_factor)));
+) in the file pcl-trunk/features/include/pcl/features/impl/ourcvfh.hpp
+

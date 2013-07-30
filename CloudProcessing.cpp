@@ -48,15 +48,33 @@ CloudProcessing::PassThroughFilter(pcl::PointCloud<pcl::PointXYZ>::Ptr input_clo
 
 	  // Pass-through filter object
 	  pcl::PassThrough<pcl::PointXYZ> PTfilter;
+    // Configuration file pointer
+    std::ifstream config_file_ptr;
+    // Parameters container
+    std::vector<float> filter_params;
+    filter_params.resize(6);
+    
+    // Loding filter parameters
+    config_file_ptr.open ("../ConfigParams.txt");
+
+    std::cout << "aleeeeeee" << std::endl;
+    for (int file_idx = 0; file_idx < 6; ++file_idx)
+    {
+      std::string line;
+      getline (config_file_ptr, line);
+      filter_params[file_idx] = boost::lexical_cast<float>(line.c_str());
+    }
+
+    config_file_ptr.close();
 
 	  // Filter object initialization
 	  PTfilter.setInputCloud (input_cloud);
 	  PTfilter.setFilterFieldName ("x");
-  	PTfilter.setFilterLimits (-1.5, 1.5);
+  	PTfilter.setFilterLimits (filter_params[0], filter_params[1]);
   	PTfilter.setFilterFieldName ("y");
-  	PTfilter.setFilterLimits (-1.5, 1.5);
+  	PTfilter.setFilterLimits (filter_params[2], filter_params[3]);
   	PTfilter.setFilterFieldName ("z");
-  	PTfilter.setFilterLimits (0.1, 1.12);
+  	PTfilter.setFilterLimits (filter_params[4], filter_params[5]);
 
   	// Filter application
   	PTfilter.filter (*input_cloud);

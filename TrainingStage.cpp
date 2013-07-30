@@ -79,7 +79,7 @@ TrainingStage::RunStage()
 	       
 	// Acquiring the cloud from Kinect sensor
 	acquisition_object.AcquireCloudKinect(kinect_acquisition);
-	//pcl::io::loadPCDFile("scene.pcd",*kinect_acquisition);
+	// pcl::io::loadPCDFile("scene.pcd",*kinect_acquisition);
 
     std::cout << std::endl <<  "---> POINT CLOUD ACQUISITION FROM KINECT total execution time: " << tt.toc() << " ms" << std::endl << std::endl;
 
@@ -195,7 +195,7 @@ TrainingStage::RunStage()
     segmentation_tree->setInputCloud (no_plane_cloud);
     // Cluster extraction object initializations
     cluster_exctraction.setClusterTolerance (0.05);
-    cluster_exctraction.setMinClusterSize (1000);
+    cluster_exctraction.setMinClusterSize (50);
     cluster_exctraction.setSearchMethod (segmentation_tree);
     cluster_exctraction.setInputCloud (no_plane_cloud);
 
@@ -279,8 +279,11 @@ TrainingStage::RunStage()
 		              
             cluster_viewer->addPointCloud<pcl::PointXYZ> (kinect_acquisition, "Original");
             cluster_viewer->addPointCloud<pcl::PointXYZ> (current_cluster, color_blue, "Cloud");
-            cluster_viewer->resetCameraViewpoint("Original");
+
+            cluster_viewer->resetCamera();
             cluster_viewer->resetCameraViewpoint("Cloud");
+            cluster_viewer->resetCameraViewpoint("Original");
+            
             cluster_viewer->addText(win_legend, 10, 10, 1, 0, 0, "AcquiredCloudText");
             cluster_viewer->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_FONT_SIZE, 12, "AcquiredCloudText");
             cluster_viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "Cloud");

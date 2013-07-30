@@ -57,5 +57,5 @@ public:
 
 	// OUR-CVFH CORRESPONDENCES SEARCH ******************************************************************************************************************************
 	// Search the current sub-folder for correspondences
-	bool SearchTheDB(std::vector<float> input_signature);
+	bool SearchTheDB(std::vector<float> input_signature, int points_number);
 };

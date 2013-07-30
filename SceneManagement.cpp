@@ -536,7 +536,7 @@ SceneManagement::VisualizeActualScene()
 	// Visualization object
     boost::shared_ptr<pcl::visualization::PCLVisualizer> scene_viewer (new pcl::visualization::PCLVisualizer ("Scene Viewer"));         
 
-     // Visualizaton object initialization
+    // Visualizaton object initialization
     scene_viewer->initCameraParameters ();
     scene_viewer->addCoordinateSystem (1.0);
     scene_viewer->setBackgroundColor (0, 0, 0);

@@ -136,11 +136,8 @@ KukaVisionStage::RunStage()
   	pcl::console::print_error("****************************************************************");
     pcl::console::print_error("****************************************************************\n");
 
-  	// acquisition_object.AcquireCloudKinect(kinect_acquisition);
-	  pcl::io::loadPCDFile("scene.pcd",*kinect_acquisition);
-
-  	// Saving the cloud of the scene in the <SceneManagement> object
-  	scene_object.SetActualScene(kinect_acquisition);
+  	acquisition_object.AcquireCloudKinect(kinect_acquisition);
+	  // pcl::io::loadPCDFile("scene.pcd",*kinect_acquisition);
 
   	std::cout << std::endl <<  "---> POINT CLOUD ACQUISITION FROM KINECT total execution time: " << tt.toc() << " ms" << std::endl << std::endl;
 
@@ -154,7 +151,10 @@ KukaVisionStage::RunStage()
     pcl::console::print_error ("******************************************************************\n");
 
   	// Filter application
-  	// processing_object.PassThroughFilter(kinect_acquisition);
+  	processing_object.PassThroughFilter(kinect_acquisition);
+
+    // Saving the cloud of the scene in the <SceneManagement> object
+    scene_object.SetActualScene(kinect_acquisition);
 
   	std::cout << std::endl << "---> PASS-THROUGH FILTER APPLICATION total execution time: " << tt.toc() << " ms" << std::endl << std::endl;
 
@@ -256,7 +256,7 @@ KukaVisionStage::RunStage()
     segmentation_tree->setInputCloud (no_plane_cloud);
     // Cluster extraction object initializations
     cluster_exctraction.setClusterTolerance (0.05);
-    cluster_exctraction.setMinClusterSize (1000);
+    cluster_exctraction.setMinClusterSize (50);
     cluster_exctraction.setSearchMethod (segmentation_tree);
     cluster_exctraction.setInputCloud (no_plane_cloud);
 
@@ -407,7 +407,7 @@ KukaVisionStage::RunStage()
                     search_object.UpdateObject(ref_subfolders[sub_idx].first);
 
                     // Searching the folder and updating the path vector
-                    if (search_object.SearchTheDB(current_signature_vector))
+                    if (search_object.SearchTheDB(current_signature_vector, current_cluster->points.size()))
                     {
                         // Update the vector containing objects that are part of the reference scene
                         scene_object.UpdateInnerObjectsVector(ref_subfolders[sub_idx].second, current_pose, current_cluster);

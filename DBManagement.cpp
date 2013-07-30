@@ -128,6 +128,11 @@ DBManagement::UpdateObject(std::string base_path)
 void 
 DBManagement::OURCVFHFlannConversion(std::string input_folder)
 {
+	// Deleting the previous flann matrix
+	boost::filesystem::path old_matrix;
+	old_matrix = actual_flann_path;
+	boost::filesystem::remove(actual_flann_path);
+
 	// Flann matrix instantiation
 	flann::Matrix<float> ourcvfh_signatures_flann (new float[sub_elements.size () * sub_elements[0].second.size ()], 
 													  sub_elements.size (), sub_elements[0].second.size ());
@@ -167,6 +172,11 @@ DBManagement::BuildOURCVFHTreeIndex(std::string input_folder)
 		pcl::console::print_error ("\n\t[WARNING] The matrix that is being used to build the tree is empty!");
 	else
 	{
+		// Delete the previous index
+		boost::filesystem::path old_index;
+		old_index = actual_tree_path;
+		boost::filesystem::remove(old_index);
+
 		// Index instantiation
 		flann::Index<flann::ChiSquareDistance<float> > index (flann_signatures, flann::KDTreeIndexParams (4));
 	   	// Index build
@@ -183,7 +193,7 @@ DBManagement::BuildOURCVFHTreeIndex(std::string input_folder)
 // SEARCHING OUR-CVFH CORRESPONDENCES
 
 bool
-DBManagement::SearchTheDB(std::vector<float> input_signature)
+DBManagement::SearchTheDB(std::vector<float> input_signature, int points_number)
 {
 	// UPDATING THE SEARCH FOLDER
 
@@ -207,6 +217,10 @@ DBManagement::SearchTheDB(std::vector<float> input_signature)
 	bool found = 0;
 	// Number of acceptable correspondences
 	int k = 1;
+	// Sum of signature elements values
+	float sign_sum = 0;
+	// Identification ratio
+	float id_ratio;
 	// Vector containing OUR-CVFH model pairs
 	std::vector<model_pair> model_vector;
 	// Flann matrix containing
@@ -250,14 +264,25 @@ DBManagement::SearchTheDB(std::vector<float> input_signature)
   	index.knnSearch (p, k_indices, k_distances, k, flann::SearchParams (512));
   	delete[] p.ptr ();
 
-	if (k_distances[0][0] > 5)
+  	// Calculate the distance between signatures
+  	for (int ii = 0; ii < input_signature.size(); ++ii)
+  		sign_sum = sign_sum + input_signature[ii];
+
+  	id_ratio = k_distances[0][0]/sign_sum;
+
+	if (id_ratio > 0.3)
+	{
   		std::cout << "\tNo correspondences found" << std::endl;
+  		if (id_ratio > 1)
+  			id_ratio = 1;
+		std::cout << "\t\tMinimum found distance: " << k_distances[0][0] << " (" << (1-id_ratio)*100 << "%" << " fitting)" << std::endl;
+	}
   	else
   	{
   		// Output the results on screen
 		pcl::console::print_error("\n\t\t\tCorrespondence found:\n");
 		std::cout << "\t\t\t\tfile -> " << model_vector.at (k_indices[0][0]).first.c_str () << std::endl
-				  << "\t\t\t\twith distance equal to " << k_distances[0][0] << std::endl;
+				  << "\t\t\t\twith distance equal to " << k_distances[0][0] << " (" << (1-id_ratio)*100 << "%" << " fitting)" << std::endl;
 		found = 1;
 	}
 	return (found);

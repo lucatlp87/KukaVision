@@ -30,7 +30,7 @@ KinectAcquisition::AcquireCloudKinect(pcl::PointCloud<pcl::PointXYZ>::Ptr input_
 	  // Acquisition viewer class instantiation
   	KinectAcquisitionViewer acquire;
 
-    std::cout << "\tAcquiring the cloud ..." << std::flush;
+    std::cout << "\tAcquiring the cloud ...\n" << std::flush;
   
   	// Acquiring function running
   	acquire.run ();

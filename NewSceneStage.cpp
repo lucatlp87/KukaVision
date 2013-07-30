@@ -81,11 +81,8 @@ NewSceneStage::RunStage()
   	pcl::console::print_error("****************************************************************");
     pcl::console::print_error("****************************************************************\n");
 
-  	// acquisition_object.AcquireCloudKinect(kinect_acquisition);
-	  pcl::io::loadPCDFile("scene.pcd",*kinect_acquisition);
-
-  	// Saving the cloud of the scene in the <SceneManagement> object
-  	scene_object.SetRefScene(kinect_acquisition);
+  	acquisition_object.AcquireCloudKinect(kinect_acquisition);
+	  // pcl::io::loadPCDFile("scene.pcd",*kinect_acquisition);
 
   	std::cout << std::endl <<  "---> POINT CLOUD ACQUISITION FROM KINECT total execution time: " << tt.toc() << " ms" << std::endl << std::endl;
 
@@ -99,7 +96,9 @@ NewSceneStage::RunStage()
     pcl::console::print_error ("******************************************************************\n");
 
   	// Filter application
-  	// processing_object.PassThroughFilter(kinect_acquisition);
+  	processing_object.PassThroughFilter(kinect_acquisition);
+    // Saving the cloud of the scene in the <SceneManagement> object
+    scene_object.SetRefScene(kinect_acquisition);
 
   	std::cout << std::endl << "---> PASS-THROUGH FILTER APPLICATION total execution time: " << tt.toc() << " ms" << std::endl << std::endl;
 
@@ -199,7 +198,7 @@ NewSceneStage::RunStage()
     segmentation_tree->setInputCloud (no_plane_cloud);
     // Cluster extraction object initializations
     cluster_exctraction.setClusterTolerance (0.05);
-    cluster_exctraction.setMinClusterSize (1000);
+    cluster_exctraction.setMinClusterSize (50);
     cluster_exctraction.setSearchMethod (segmentation_tree);
     cluster_exctraction.setInputCloud (no_plane_cloud);
 
@@ -344,7 +343,7 @@ NewSceneStage::RunStage()
                     search_object.UpdateObject(search_path);
 
                     // Searching the folder and updating the path vector
-                    if (search_object.SearchTheDB(current_signature_vector))
+                    if (search_object.SearchTheDB(current_signature_vector, current_cluster->points.size()))
                     {
                         // Update the object list
                         current_object.SetObjectID(current_obj_id);

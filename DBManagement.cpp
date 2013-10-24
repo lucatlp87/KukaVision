@@ -64,7 +64,7 @@ DBManagement::SearchTheSubfolder()
 	   		// Load the file as a PCD
 	   		try
 	   		{
-			    sensor_msgs::PointCloud2 cloud;
+			    pcl::PCLPointCloud2 cloud;
 			    int version;
 			    Eigen::Vector4f origin;
 			    Eigen::Quaternionf orientation;
@@ -82,7 +82,7 @@ DBManagement::SearchTheSubfolder()
 			    	pcl::io::loadPCDFile (it->path().string (), point);
 			    	actual_file.second.resize (308);
 
-		    		std::vector <sensor_msgs::PointField> fields;
+		    		std::vector <pcl::PCLPointField> fields;
 		    		pcl::getFieldIndex (point, "vfh", fields);
 
 			       	// Add the histogram to the model pair
@@ -208,20 +208,20 @@ DBManagement::SearchTheDB(std::vector<float> input_signature, int points_number)
 		pcl::console::print_error("\t\tFlannMatrixVFH.h5\n");
 		pcl::console::print_error("\t\tModelNames.list\n");
 		pcl::console::print_error("\t\tKdTree.index\n");
-		output_pair.first = 0;
-		output_pair.second = 0;
+		output_pair.first = "File missing";
+		output_pair.second = -1;
 		return (output_pair);
 	}
 
 	// INITIALIZATION **********************************************************************************************************************************************
-	// Return variable
-	bool found = 0;
 	// Number of acceptable correspondences
 	int k = 1;
 	// Sum of signature elements values
 	float sign_sum = 0;
 	// Identification ratio
 	float id_ratio;
+	// Found/Not found flag
+	bool found = 0;
 	// Vector containing OUR-CVFH model pairs
 	std::vector<model_pair> model_vector;
 	// Flann matrix containing
@@ -230,6 +230,8 @@ DBManagement::SearchTheDB(std::vector<float> input_signature, int points_number)
   	flann::Matrix<float> k_distances (new float[k], 1, k);
   	// Flann matrix containing OUR-CVFH histograms data
   	flann::Matrix<float> histogram_data;
+  	// Eigen matrix in which the local transformation is stored
+  	Eigen::Matrix4f local_transform;
 
   	// Loading histograms data (Flann format) in the Flann matrix
     flann::load_from_file (histogram_data, actual_flann_path, "training_data");
@@ -275,19 +277,25 @@ DBManagement::SearchTheDB(std::vector<float> input_signature, int points_number)
 	{
   		std::cout << "\tNo correspondences found" << std::endl;
   		if (id_ratio > 1)
-  			id_ratio = 1;
-		std::cout << "\t\t\tMinimum found distance: " << k_distances[0][0] << " (" << (1-id_ratio)*100 << "%" << " fitting)" << std::endl;
+  			id_ratio = 2;
+		std::cout << "\t\t\tMinimum found distance: " << k_distances[0][0] << " (" << (1-id_ratio)*100 << "%%" << " fitting)" << std::endl;
+		output_pair.first = "No match";
+		output_pair.second = 0;
 	}
   	else
   	{
   		// Output the results on screen
 		pcl::console::print_error("\n\t\t\t\tCorrespondence found:\n");
 		std::cout << "\t\t\t\t\tfile -> " << model_vector.at (k_indices[0][0]).first.c_str () << std::endl
-				  << "\t\t\t\t\twith distance equal to " << k_distances[0][0] << " (" << (1-id_ratio)*100 << "%" << " fitting)" << std::endl;
-		found = 1;
+				  << "\t\t\t\t\twith distance equal to " << k_distances[0][0] << " (" << (1-id_ratio)*100 << "%%" << " fitting)" << std::endl;
+
+		// Retrieving the local transformation
+		std::stringstream local_transform_path;
+		local_transform_path << model_vector.at(k_indices[0][0]).first.substr(0,model_vector.at(k_indices[0][0]).first.find_last_of(".")) << ".txt";
+		output_pair.first = local_transform_path.str();
+		output_pair.second = (1-id_ratio)*100;
+		local_transform_path.str("");
 	}
 
-	output_pair.first = found;
-	output_pair.second = (1-id_ratio)*100;
 	return (output_pair);
 }

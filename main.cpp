@@ -17,6 +17,11 @@
 //          T5.1. OUR-CVFH histogram conversion to Flann format
 //          T5.2. OUR-CVFH histograms path add
 //          T5.3. Kd-Tree index build and storage
+//  
+//  - TRAINING STAGE MESH
+//    In this stage the objects are not acquired by Kinect sensor but they are taken from a virtual scannning around synthetic meshes.
+//    The output of the function is the same but there is no need to consider a grabber and step T4.3. is no more performed (since the 
+//    virtual scanning automatically saves .pcd files when terminate)
 // 
 //  - NEW SCENE CREATION STAGE
 //    It deals with the creation of new reference scene. Every new scene is saved in the SceneDB. 
@@ -62,6 +67,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include "TrainingStage.h"
+#include "TrainingStageMesh.h"
 #include "NewSceneStage.h"
 #include "KukaVisionStage.h"
 #include "MaintenanceStage.h"
@@ -74,7 +80,10 @@ PrintUsage(const char* progName)
               << "-------------------------------------------" << std::endl
               << "-h            THIS HELP" << std::endl
               << "-t            TRAINING STAGE" << std::endl
-              << "              Object model creation (Kinect acquisition of the cluster, VFH descriptor determination" << std::endl
+              << "              Object model creation (Kinect acquisition of the cluster, OUR-CVFH descriptor determination" << std::endl
+              << "              and KdTree update)" << std::endl
+              << "-tm           TRAINING STAGE MESH" << std::endl
+              << "              Object model creation (Virtual scanning of synthetic meshes, OUR-CVFH descriptor determination) " << std::endl
               << "              and KdTree update)" << std::endl
               << "-n            NEW SCENE REGISTRATION STAGE" << std::endl
               << "              New reference scene acquisition" << std::endl
@@ -88,7 +97,7 @@ PrintUsage(const char* progName)
 int 
 main(int argc, char** argv)
 {
-  bool training_(false), new_ref_scene_(false), kuka_vision_(false), maintenance_(false);
+  bool training_(false), training_mesh_(false), new_ref_scene_(false), kuka_vision_(false), maintenance_(false);
 
   // PARSING THE COMMAND LINE
 	if (pcl::console::find_argument (argc, argv, "-h") >= 0)
@@ -98,6 +107,8 @@ main(int argc, char** argv)
   }
   else if (pcl::console::find_argument (argc, argv, "-t") >= 0)
     training_ = true;
+  else if (pcl::console::find_argument (argc, argv, "-tm") >= 0)
+    training_mesh_ = true;
   else if (pcl::console::find_argument (argc, argv, "-n") >= 0)
     new_ref_scene_ = true;
   else if (pcl::console::find_argument (argc, argv, "-k") >= 0)
@@ -117,6 +128,13 @@ main(int argc, char** argv)
     TrainingStage training;
     // Stage running    
     training.RunStage();
+  }
+  else if (training_mesh_)
+  {
+    // Class instantiation
+    TrainingStageMesh training_mesh;
+    // Stage running
+    training_mesh.RunStage();
   }
   else if (new_ref_scene_)
   {

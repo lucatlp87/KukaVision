@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 project(KukaVision)
 
 
-find_package(PCL 1.2 REQUIRED)
+find_package(PCL 1.6 REQUIRED)
 include_directories(${PCL_INCLUDE_DIRS} ${CURRENT_PROJECT_DIR})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
@@ -16,6 +16,7 @@ include_directories(${HDF5_INCLUDE_DIR})
 
 add_executable (KukaVision 	main.cpp 
 							TrainingStage.cpp
+							TrainingStageMesh.cpp
 							NewSceneStage.cpp
 							KukaVisionStage.cpp
 							MaintenanceStage.cpp

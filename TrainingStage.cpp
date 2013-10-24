@@ -66,7 +66,7 @@ TrainingStage::RunStage()
     // Time counter
     pcl::console::TicToc tt;
 
-    // STEP T1. ACQUISITION OF THE CLOUD FROM KINECT *******************************************************************************************************
+     // STEP T1. ACQUISITION OF THE CLOUD FROM KINECT *******************************************************************************************************
 	// *****************************************************************************************************************************************************
 	// Be sure to have:
 	//  - the Kinect sensor plugged in
@@ -83,9 +83,9 @@ TrainingStage::RunStage()
 
     std::cout << std::endl <<  "---> POINT CLOUD ACQUISITION FROM KINECT total execution time: " << tt.toc() << " ms" << std::endl << std::endl;
 
-
     // STEP T2. PASS-THROUGH FILTER APPLICATION ************************************************************************************************************
     // *****************************************************************************************************************************************************
+    
     tt.tic();
     pcl::console::print_error ("\nSTEP T2. PASS-THROUGH FILTER APPLICATION ");
     pcl::console::print_error ("*******************************************************************");
@@ -95,8 +95,7 @@ TrainingStage::RunStage()
     // processing_object.PassThroughFilter(kinect_acquisition);
 
     std::cout << std::endl << "---> PASS-THROUGH FILTER APPLICATION total execution time: " << tt.toc() << " ms" << std::endl << std::endl;
-			
-
+            
 	// STEP T3. DOMINANT PLANE AND CLUSTERS EXTRACTION *****************************************************************************************************
     // *****************************************************************************************************************************************************
     tt.tic();

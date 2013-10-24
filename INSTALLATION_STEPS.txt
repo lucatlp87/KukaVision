@@ -47,6 +47,14 @@ sudo apt-get install libvtk-java
 ---> OPENNI
 ps-engine and openni-dev installed
 
+---> PCL 1.7.0 released after 23-07-2013
+1. DBManagement.cpp - line 67 - sensor_msgs::PointCloud2 -> pcl::PCLPointCloud2
+
+2. DBManagement.cpp - line 85 - <sensor_msgs::PointField> -> <pcl::PCLPointField>
+
+3. OURCVFHEstimation.cpp - line 66 - <sensor_msgs::PointField> -> <pcl::PCLPointField>
+
+
 
 
 

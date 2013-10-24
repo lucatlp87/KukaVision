@@ -8,6 +8,7 @@
 #include <pcl/io/grabber.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
+#include <pcl/common/time.h>
 
 // CLASS DEFINITION
 // The following class aims to instantiate and manage a visualizer for the scene seen by Kinect sensor.

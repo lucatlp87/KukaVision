@@ -2,7 +2,7 @@
 // In this file the <DBManagement> class id defined. It caontains methods used to perfrom Kd-Tree search in the DataBase
 
 #include <flann/flann.h>
-typedef std::pair<bool, float> match_pair;
+typedef std::pair<std::string, float> match_pair;
 
 class DBManagement
 {

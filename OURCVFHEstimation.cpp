@@ -38,7 +38,7 @@ OURCVFHEstimation::CloudOURCVFHComputation(pcl::PointCloud<pcl::PointXYZ>::Ptr c
 	ourcvfh.setCurvatureThreshold (0.025f);
 	ourcvfh.setClusterTolerance (0.015f);
 	ourcvfh.setEPSAngleThreshold (0.13f);
-	ourcvfh.setMinPoints (30);
+	ourcvfh.setMinPoints (50);
 	
 	ourcvfh.setNormalizeBins (false);
 	ourcvfh.setAxisRatio (0.98);
@@ -63,7 +63,7 @@ OURCVFHEstimation::OURCVFHSignatureTransformation(pcl::PointCloud<pcl::VFHSignat
 	pcl::PointCloud<pcl::VFHSignature308>::Ptr local_signature (new pcl::PointCloud<pcl::VFHSignature308>);
 	*local_signature = *signature;
 	// Point cloud fields object
-	std::vector <sensor_msgs::PointField> fields;
+	std::vector <pcl::PCLPointField> fields;
 	// Output vector
 	std::vector<float> output_vector;
 	output_vector.resize(308);

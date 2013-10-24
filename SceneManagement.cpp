@@ -181,7 +181,7 @@ SceneManagement::UpdateOuterObjectsVector(int index_to_search, Eigen::Matrix4f p
 	outer_object.SetObjectActualPose(pose);
 
 	// Calculating the transformation matrix
-	pcl::console::print_error("\n\t\t\tCalculating the transformation matrix between poses...");
+	pcl::console::print_error("\n\t\t\tCalculating the transfFlannMatrixOURCVFHormation matrix between poses...");
 	outer_object.SetObjectPoseTransformation(1);
 	pcl::console::print_error("\tdone\n");
 

@@ -36,7 +36,7 @@
 
 // DEFINITION OF AUXILIARY STRUCTURES
 // Best match structure
-typedef std::pair<bool, float> match_pair;
+typedef std::pair<std::string, float> match_pair;
 
 // CONSTRUCTOR
 NewSceneStage::NewSceneStage() {}
@@ -368,16 +368,32 @@ NewSceneStage::RunStage()
 
                             // Searching the folder and updating the path vector
                             current_match = search_object.SearchTheDB(current_signature_vector, current_cluster->points.size());
-                            if (current_match.first)
+                            if (current_match.second > 0)
                             {
                                 if (current_match.second > best_match_percentage)
-                                {                                
+                                {   
+                                    //Retrieving the real object pose
+                                    std::ifstream matrix_file_ptr;
+                                    float matrix_element;
+                                    Eigen::Matrix4f T_cf;
+                                    Eigen::Matrix4f current_obj_pose;
+
+                                    matrix_file_ptr.open (current_match.first.c_str());    
+                                    for (int matrix_row = 0; matrix_row < 4; ++matrix_row)
+                                        for (int matrix_col = 0; matrix_col < 4; ++matrix_col)
+                                        {
+                                            matrix_file_ptr >> matrix_element;
+                                            T_cf(matrix_row,matrix_col) = matrix_element;
+                                        }
+                                    matrix_file_ptr.close();
+                                    current_obj_pose = current_pose[smooth_idx]*T_cf;
+
                                     // Update the object list
                                     current_object.SetObjectID(current_obj_id);
                                     ++current_obj_id;
                                     current_object.SetObjectType(ss.str().substr(ss.str().find_last_of("/")+1));
                                     current_object.SetObjectModelPath(search_path);
-                                    current_object.SetObjectRefPose(current_pose[smooth_idx]);
+                                    current_object.SetObjectRefPose(current_obj_pose);
                                     current_object.SetObjectCloud(current_cluster);
                                     // Update the best match percentage
                                     best_match_percentage = current_match.second;

@@ -30,7 +30,7 @@
 // Reference scene structure
 typedef std::pair<std::string, int> ref_pair;
 // Best match structure
-typedef std::pair<bool, float> match_pair;
+typedef std::pair<std::string, float> match_pair;
 
 // CONSTRUCTOR
 KukaVisionStage::KukaVisionStage() {}
@@ -306,6 +306,7 @@ KukaVisionStage::RunStage()
         float best_match_percentage;
         int best_match_sub_idx;
         int best_match_smooth_idx;
+        std::string best_path;
         // Path of the subfolder
         std::string search_path;  
         // Flag indicating correspondence found
@@ -381,6 +382,7 @@ KukaVisionStage::RunStage()
                 best_match_percentage = 0;
                 best_match_sub_idx = 0;
                 best_match_smooth_idx = 0;
+                best_path = "";
 
                 if (!corr_found)
                 {
@@ -433,7 +435,7 @@ KukaVisionStage::RunStage()
 
                             // Searching the folder and updating the path vector
                             current_match = search_object.SearchTheDB(current_signature_vector, current_cluster->points.size());
-                            if (current_match.first)
+                            if (current_match.second > 0)
                             {
                                 if (current_match.second > best_match_percentage)
                                 {
@@ -441,6 +443,7 @@ KukaVisionStage::RunStage()
                                     best_match_percentage = current_match.second;
                                     best_match_sub_idx = sub_idx;
                                     best_match_smooth_idx = smooth_idx;
+                                    best_path = current_match.first;
                                     pcl::console::print_error ("\t\t\t\t\tNew best match!\n");
 
                                     corr_found = 1;
@@ -452,9 +455,25 @@ KukaVisionStage::RunStage()
             }
             
             if (corr_found)
-            {
+            {   
+                //Retrieving the real object pose
+                std::ifstream matrix_file_ptr;
+                float matrix_element;
+                Eigen::Matrix4f T_cf;
+                Eigen::Matrix4f current_obj_pose;
+
+                matrix_file_ptr.open (best_path.c_str());    
+                for (int matrix_row = 0; matrix_row < 4; ++matrix_row)
+                    for (int matrix_col = 0; matrix_col < 4; ++matrix_col)
+                    {
+                        matrix_file_ptr >> matrix_element;
+                        T_cf(matrix_row,matrix_col) = matrix_element;
+                    }
+                matrix_file_ptr.close();
+                current_obj_pose = current_pose[best_match_smooth_idx]*T_cf;
+
                 // Update the vector containing objects that are part of the reference scene
-                scene_object.UpdateInnerObjectsVector(ref_subfolders[best_match_sub_idx].second, current_pose[best_match_smooth_idx], current_cluster);
+                scene_object.UpdateInnerObjectsVector(ref_subfolders[best_match_sub_idx].second, current_obj_pose, current_cluster);
                 // Erase the searched subfolder from the list of possible objects to find
                 ref_subfolders.erase(ref_subfolders.begin()+best_match_sub_idx);
             }

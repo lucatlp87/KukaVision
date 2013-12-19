@@ -1,0 +1,11 @@
+TODO
+
+--> class OURCVFHEstimation <---
+- add a function that plots histograms
+
+--> class KukaVisionStage <--- <---<---
+- Define a better way of recognizing inner and outer objects taking into account that tha same object could have different histograms
+
+--> class ManagementStage
+- add a routine in order to set the pose of outer objects
+- add a routine in order to set the transformation matrix between kinect and kuka base
